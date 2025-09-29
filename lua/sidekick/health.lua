@@ -19,13 +19,14 @@ function M.check()
 
   start("Sidekick Copilot LSP")
 
-  if vim.lsp.is_enabled("copilot") then
-    ok("Copilot LSP is enabled")
+  local clients = Config.get_copilot_clients()
+  if #clients > 0 then
+    ok("Found active Copilot LSP client(s)")
   else
-    error("Copilot LSP is not enabled")
+    error("No active Copilot LSP client found")
   end
 
-  for _, client in ipairs(vim.lsp.get_clients({ name = "copilot" })) do
+  for _, client in ipairs(clients) do
     if client.handlers["didChangeStatus"] == require("sidekick.status").on_status then
       ok("Sidekick is handling Copilot LSP status notifications for client: " .. client.id)
     else

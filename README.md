@@ -32,10 +32,11 @@ without leaving your editor.
 ## 📋 Requirements
 
 - **Neovim** `>= 0.11.2` or newer
-- The official **Copilot LSP** server, enabled with `vim.lsp.enable`
+- The official **Copilot LSP** server, enabled with `vim.lsp.enable`, [copilot.lua](https://github.com/zbirenbaum/copilot.lua) or [copilot.vim](https://github.com/github/copilot.vim)
   **TIP:** can be installed with [mason-lspconfig.nvim](https://github.com/mason-org/mason-lspconfig.nvim)
 - A working `lsp/copilot.lua` configuration.
   **TIP:** Included in [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig)
+- **Optional**: Other AI cli tools, such as Claude and Gemini, for integrated ai cli experience in neovim.
 
 ## 📦 Installation
 
