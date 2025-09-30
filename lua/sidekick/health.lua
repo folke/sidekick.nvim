@@ -19,7 +19,7 @@ function M.check()
 
   start("Sidekick Copilot LSP")
 
-  local clients = Config.get_copilot_clients()
+  local clients = Config.get_clients()
   if #clients > 0 then
     ok("Found active Copilot LSP client(s)")
   else
