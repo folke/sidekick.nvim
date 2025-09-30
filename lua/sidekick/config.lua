@@ -106,11 +106,19 @@ local defaults = {
   debug = false, -- enable debug logging
 }
 
+local state_dir = vim.fn.stdpath("state") .. "/sidekick"
+
 local config = vim.deepcopy(defaults) --[[@as sidekick.Config]]
+
+---@param name string
+function M.state(name)
+  return state_dir .. "/" .. name
+end
 
 ---@param opts? sidekick.Config
 function M.setup(opts)
   config = vim.tbl_deep_extend("force", {}, defaults, opts or {})
+  vim.fn.mkdir(state_dir, "p")
 
   local group = vim.api.nvim_create_augroup("sidekick", { clear = true })
 

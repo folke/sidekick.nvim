@@ -1,9 +1,11 @@
 local Config = require("sidekick.config")
 local Mux = require("sidekick.cli.mux")
+local Session = require("sidekick.cli.session")
 local Util = require("sidekick.util")
 
 ---@class sidekick.cli.Terminal
 ---@field tool sidekick.cli.Tool
+---@field session sidekick.cli.Session
 ---@field group integer
 ---@field ctime integer
 ---@field atime integer
@@ -32,20 +34,20 @@ end
 ---@type vim.wo
 local wo = {
   winhighlight = "Normal:SidekickChat,NormalNC:SidekickChat",
+  colorcolumn = "",
   cursorcolumn = false,
   cursorline = false,
-  colorcolumn = "",
   fillchars = "eob: ",
   list = false,
   listchars = "tab:  ",
   number = false,
   relativenumber = false,
+  sidescrolloff = 0,
   signcolumn = "no",
   spell = false,
   winbar = "",
   statuscolumn = " ",
   wrap = false,
-  sidescrolloff = 0,
 }
 
 ---@type vim.bo
@@ -53,20 +55,33 @@ local bo = {
   swapfile = false,
 }
 
----@param name string
-function M.get(name)
-  return M.terminals[name]
+---@param session_id string
+function M.get(session_id)
+  return M.terminals[session_id]
+end
+
+function M.sessions()
+  local ret = {} ---@type table<string, sidekick.cli.Session>
+  for _, t in pairs(M.terminals) do
+    ret[t.session.id] = t.session
+  end
+  return ret
 end
 
 ---@param tool sidekick.cli.Tool
 function M.new(tool)
+  local existing = tool.session and M.get(tool.session.id)
+  if existing then
+    return existing
+  end
   local self = setmetatable({}, M)
   self.tool = tool
   self.ctime = vim.uv.hrtime()
+  self.session = tool.session or Session.new(tool)
   self.atime = self.ctime
   self.send_queue = {}
-  self.group = vim.api.nvim_create_augroup("sidekick_cli_" .. tool.name, { clear = true })
-  M.terminals[self.tool.name] = self
+  self.group = vim.api.nvim_create_augroup("sidekick_cli_" .. self.session.id, { clear = true })
+  M.terminals[self.session.id] = self
   return self
 end
 
@@ -88,10 +103,11 @@ function M:start()
   end
 
   if Config.cli.mux.enabled then
-    self.mux = Mux.new(self.tool)
+    self.mux = Mux.new(self.tool, self.session)
     if not self.mux then
       return
     end
+    Session.save(self.session)
   end
 
   local cmd = self.mux and self.mux:cmd() or self.tool
@@ -174,6 +190,7 @@ function M:start()
       end
     end
     self.job = vim.fn.jobstart(cmd.cmd, {
+      cwd = self.session.cwd,
       term = true,
       clear_env = true,
       env = not vim.tbl_isempty(env) and env or nil,
@@ -241,6 +258,7 @@ function M:focus()
     return self
   end
   vim.api.nvim_set_current_win(self.win)
+  vim.cmd.startinsert()
   return self
 end
 
@@ -249,6 +267,7 @@ function M:blur()
     return
   end
   vim.cmd.wincmd("p")
+  vim.cmd.stopinsert()
 end
 
 function M:is_focused()
@@ -273,7 +292,7 @@ function M:hide()
 end
 
 function M:close()
-  M.terminals[self.tool.name] = nil
+  M.terminals[self.session.id] = nil
   if vim.tbl_isempty(M.terminals) then
     require("sidekick.cli.watch").disable()
   end

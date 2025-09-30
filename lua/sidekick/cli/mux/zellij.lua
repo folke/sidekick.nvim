@@ -1,7 +1,9 @@
+local Config = require("sidekick.config")
 local Util = require("sidekick.util")
 
 ---@class sidekick.cli.muxer.Zellij: sidekick.cli.Muxer
 local M = {}
+M.backend = "zellij"
 setmetatable(M, require("sidekick.cli.mux"))
 
 M.tpl = [[
@@ -39,11 +41,11 @@ function M:cmd()
     )) --[[@as string]]
   end
 
-  local layout_file = vim.fn.stdpath("state") .. "/sidekick-zellij-" .. self.session .. ".layout"
+  local layout_file = Config.state("zellij-layout-" .. self.session.id .. ".kdl")
   vim.fn.writefile(vim.split(layout, "\n"), layout_file)
 
   return {
-    cmd = { "zellij", "--layout", layout_file, "attach", "--create", self.session },
+    cmd = { "zellij", "--layout", layout_file, "attach", "--create", self.session.id },
     env = {
       ZELLIJ = false,
       ZELLIJ_SESSION_NAME = false,
@@ -52,20 +54,15 @@ function M:cmd()
   }
 end
 
-function M.sessions()
+function M._sessions()
   local ret = vim.system({ "zellij", "list-sessions", "-n" }, { text = true }):wait()
   if ret.code ~= 0 then
     return {}
   end
-  local sessions = {} ---@type table<string,sidekick.cli.mux.Session>
+  local sessions = {} ---@type string[]
   for _, line in ipairs(vim.split(ret.stdout, "\n", { plain = true })) do
     local session = line:match("^(sidekick .-) %[")
-    if session then
-      sessions[session] = {
-        name = session,
-        tool = session:match("sidekick ([^ ]+)") or "",
-      }
-    end
+    sessions[#sessions + 1] = session
   end
   return sessions
 end

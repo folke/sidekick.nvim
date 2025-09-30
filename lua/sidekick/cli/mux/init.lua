@@ -1,18 +1,21 @@
 local Config = require("sidekick.config")
+local Session = require("sidekick.cli.session")
 local Util = require("sidekick.util")
 
----@class sidekick.cli.mux.Session
----@field name string
----@field tool string
+---@class sidekick.cli.mux.Opts
+---@field cwd? string
 
 ---@class sidekick.cli.Muxer
 ---@field tool sidekick.cli.Tool
----@field session string
+---@field session sidekick.cli.Session
+---@field backend "tmux"|"zellij"
+---@field cwd string
 local M = {}
 M.__index = M
 
 ---@param tool sidekick.cli.Tool
-function M.new(tool)
+---@param session sidekick.cli.Session
+function M.new(tool, session)
   local super = M.get()
   if not super then
     return
@@ -20,7 +23,8 @@ function M.new(tool)
   ---@type sidekick.cli.Muxer
   local self = setmetatable({}, { __index = super })
   self.tool = tool
-  self.session = M.get_session(self.tool)
+  session.mux = self.backend
+  self.session = session
   return self
 end
 
@@ -29,18 +33,27 @@ function M:cmd()
   error("Muxer:cmd() not implemented")
 end
 
----@return table<string,sidekick.cli.mux.Session>
-function M.sessions()
-  local mux = M.get()
-  return mux and mux.sessions() or {}
+---@return string[]?
+function M:_sessions()
+  error("Muxer:cmd() not implemented")
 end
 
----@param tool sidekick.cli.Tool
-function M.get_session(tool)
-  local cwd = vim.fn.getcwd(0)
-  cwd = vim.fn.fnamemodify(cwd, ":p:~")
-  cwd = cwd:gsub("[^%w%-%_~ ]+", "_"):gsub("^_+", ""):gsub("_+$", "")
-  return ("sidekick " .. tool.name .. " " .. cwd)
+---@return table<string,sidekick.cli.Session>
+function M.sessions()
+  local mux = M.get()
+  if not mux then
+    return {}
+  end
+  local sessions = mux:_sessions() or {}
+  local ret = {} ---@type table<string,sidekick.cli.Session>
+  for _, id in ipairs(sessions) do
+    local s = Session.get(id)
+    if s then
+      s.mux = mux.backend
+      ret[id] = s
+    end
+  end
+  return ret
 end
 
 function M.get()

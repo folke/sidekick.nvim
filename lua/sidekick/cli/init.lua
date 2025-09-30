@@ -1,4 +1,5 @@
 local Config = require("sidekick.config")
+local Session = require("sidekick.cli.session")
 local Terminal = require("sidekick.cli.terminal")
 local Util = require("sidekick.util")
 
@@ -16,14 +17,17 @@ local M = {}
 
 ---@class sidekick.cli.Tool: sidekick.cli.Tool.spec
 ---@field name string
----@field installed boolean
----@field running boolean
----@field mux boolean
+---@field installed? boolean
+---@field running? boolean
+---@field mux? boolean
+---@field session? sidekick.cli.Session
 
 ---@class sidekick.cli.Filter
 ---@field name? string
+---@field session? string
 ---@field installed? boolean
 ---@field running? boolean
+---@field cwd? boolean
 
 ---@class sidekick.cli.With
 ---@field filter? sidekick.cli.Filter
@@ -33,6 +37,7 @@ local M = {}
 ---@class sidekick.cli.Show
 ---@field name? string
 ---@field focus? boolean
+---@field filter? sidekick.cli.Filter
 ---@field on_show? fun(terminal: sidekick.cli.Terminal)
 
 ---@class sidekick.cli.Hide
@@ -52,40 +57,34 @@ local M = {}
 ---@field [2] string|sidekick.cli.Action
 ---@field mode? string|string[]
 
----@param tool sidekick.cli.Tool
----@return boolean opened true when a URL was opened
-local function open_tool_url(tool)
-  local display = tool.name or (tool.cmd and tool.cmd[1]) or "tool"
-
-  if not tool.url then
-    Util.warn(("No install URL configured for `%s`"):format(display))
-    return false
-  end
-
-  local ok, err = pcall(vim.ui.open, tool.url)
-  if not ok then
-    Util.error(("Failed to open %s: %s"):format(tool.url, err))
-    return false
-  end
-
-  Util.info(("Opening %s in your browser..."):format(tool.url))
-  return true
-end
-
 ---@param opts? sidekick.cli.Select
 function M.select_tool(opts)
   opts = opts or {}
   local tools = M.get_tools(opts.filter)
 
-  local on_select = function(choice)
-    if choice then
-      if not choice.installed and open_tool_url(choice) then
+  ---@param tool? sidekick.cli.Tool
+  local on_select = function(tool)
+    if tool then
+      if not tool.installed then
+        if tool.url then
+          local ok, err = vim.ui.open(tool.url)
+          if ok then
+            Util.info(("Opening %s in your browser..."):format(tool.url))
+          else
+            Util.error(("Failed to open %s: %s"):format(tool.url, err))
+          end
+        else
+          Util.error(("Tool `%s` is not installed"):format(tool.name))
+        end
         return
       end
       if opts.on_select then
-        return opts.on_select(choice)
+        return opts.on_select(tool)
       end
-      M.show({ name = choice.name, focus = opts.focus })
+      M.show({
+        filter = { name = tool.name, session = tool.session and tool.session.id or nil },
+        focus = opts.focus,
+      })
     end
   end
 
@@ -96,32 +95,57 @@ function M.select_tool(opts)
     on_select(tools[1])
     return
   end
+
+  ---@param tool sidekick.cli.Tool|snacks.picker.Item
+  ---@param picker? snacks.Picker
+  local format = function(tool, picker)
+    local sw = vim.api.nvim_strwidth
+    local ret = {} ---@type snacks.picker.Highlight[]
+    if picker then
+      local count = picker:count()
+      local idx = tostring(tool.idx)
+      idx = (" "):rep(#tostring(count) - #idx) .. idx
+      ret[#ret + 1] = { idx .. ".", "SnacksPickerIdx" }
+      ret[#ret + 1] = { " " }
+    end
+    ret[#ret + 1] = { tool.installed and "✅" or "❌" }
+    ret[#ret + 1] = { " " }
+    ret[#ret + 1] = { tool.name }
+    local len = sw(tool.name) + 2
+    if tool.mux then
+      local backend = ("[%s]"):format(Config.cli.mux.backend)
+      ret[#ret + 1] = { string.rep(" ", 12 - len) }
+      ret[#ret + 1] = { backend, "Special" }
+      len = 12 + sw(backend)
+    elseif tool.running then
+      ret[#ret + 1] = { string.rep(" ", 12 - len) }
+      ret[#ret + 1] = { "[running]", "Special" }
+      len = 12 + sw("[running]")
+    end
+    if tool.session then
+      ret[#ret + 1] = { string.rep(" ", 22 - len) }
+      if picker then
+        local item = vim.deepcopy(tool) --[[@as snacks.picker.Item]]
+        item.file = tool.session.cwd
+        item.dir = true
+        vim.list_extend(ret, require("snacks").picker.format.filename(item, picker))
+      else
+        ret[#ret + 1] = { vim.fn.fnamemodify(tool.session.cwd, ":p:~"), "Directory" }
+      end
+    end
+    return ret
+  end
+
   ---@type snacks.picker.ui_select.Opts
   local select_opts = {
     prompt = "Select CLI tool:",
+    picker = {
+      format = format,
+    },
     kind = "snacks",
     ---@param tool sidekick.cli.Tool
     format_item = function(tool, is_snacks)
-      local sw = vim.api.nvim_strwidth
-      local parts = {} ---@type snacks.picker.Highlight[]
-      parts[#parts + 1] = { tool.installed and "✅" or "❌" }
-      parts[#parts + 1] = { " " }
-      parts[#parts + 1] = { tool.name }
-      local len = sw(tool.name) + 2
-      if tool.mux then
-        local backend = ("[%s]"):format(Config.cli.mux.backend)
-        parts[#parts + 1] = { string.rep(" ", 12 - len) }
-        parts[#parts + 1] = { backend, "Special" }
-        len = 12 + sw(backend)
-      elseif tool.running then
-        parts[#parts + 1] = { string.rep(" ", 12 - len) }
-        parts[#parts + 1] = { "[running]", "Special" }
-        len = 12 + sw("[running]")
-      end
-      if tool.url then
-        parts[#parts + 1] = { string.rep(" ", 22 - len) }
-        parts[#parts + 1] = { tool.url, "Comment" }
-      end
+      local parts = format(tool)
       return is_snacks and parts or table.concat(vim.tbl_map(function(p)
         return p[1]
       end, parts))
@@ -137,10 +161,12 @@ function M.is(t, filter)
   filter = filter or {}
   t = getmetatable(t) == Terminal and t.tool or t
   ---@cast t sidekick.cli.Tool
-  local terminal = Terminal.get(t.name)
+  local terminal = t.session and Terminal.get(t.session.id)
   return (filter.name == nil or filter.name == t.name)
     and (filter.installed == nil or filter.installed == t.installed)
+    and (filter.session == nil or (t.session and t.session.id == filter.session))
     and (filter.running == nil or filter.running == (terminal and terminal:is_running()))
+    and (filter.cwd == nil or (t.session and t.session.cwd == Session.cwd()))
 end
 
 ---@param filter? sidekick.cli.Filter
@@ -150,17 +176,35 @@ function M.get_tools(filter)
   local all = {} ---@type sidekick.cli.Tool[]
 
   local sessions = Mux.sessions()
+  for id, session in pairs(Terminal.sessions()) do
+    sessions[id] = session
+  end
 
-  for name, tool in pairs(Config.cli.tools) do
+  for _, session in pairs(sessions) do
+    local t = vim.deepcopy(Config.cli.tools[session.tool]) --[[@as sidekick.cli.Tool?]]
+    if t then
+      t.name = session.tool
+      t.session = session
+      t.installed = true
+      t.running = session.mux == nil
+      t.mux = session.mux ~= nil
+      all[#all + 1] = t
+    end
+  end
+
+  for name, tool in pairs(vim.deepcopy(Config.cli.tools)) do
     ---@cast tool sidekick.cli.Tool
     tool.name = name
-    tool.installed = vim.fn.executable(tool.cmd[1]) == 1
-    local terminal = Terminal.get(name)
-    local session = Mux.get_session(tool)
-    tool.running = terminal and terminal:is_running()
-    tool.mux = sessions[session] ~= nil
-    all[#all + 1] = tool
+    local id = Session.new(tool).id
+    if not sessions[id] then
+      tool.installed = vim.fn.executable(tool.cmd[1]) == 1
+      tool.running = false
+      tool.mux = false
+      all[#all + 1] = tool
+    end
   end
+
+  local cwd = Session.cwd()
 
   ---@type sidekick.cli.Tool[]
   ---@param t sidekick.cli.Tool
@@ -173,6 +217,12 @@ function M.get_tools(filter)
     end
     if a.running ~= b.running then
       return a.running
+    end
+    -- sessions in cwd, or tools without a session
+    local a_cwd = (not a.session or a.session.cwd == cwd or false)
+    local b_cwd = (not b.session or b.session.cwd == cwd or false)
+    if a_cwd ~= b_cwd then
+      return a_cwd
     end
     if a.mux ~= b.mux then
       return a.mux
@@ -207,7 +257,6 @@ function M.with(cb, opts)
       on_select = function(tool)
         if vim.fn.executable(tool.cmd[1]) == 0 then
           Util.error(("`%s` is not installed"):format(tool.cmd[1]))
-          open_tool_url(tool)
           return
         end
         cb(Terminal.new(tool))
@@ -222,6 +271,8 @@ end
 ---@overload fun(name: string)
 function M.show(opts)
   opts = type(opts) == "string" and { name = opts } or opts or {}
+  local filter = opts.filter or {}
+  filter.name = opts.name or filter.name or nil
   M.with(function(t)
     t:show()
     if t:is_open() then
@@ -234,7 +285,7 @@ function M.show(opts)
         end)
       end
     end
-  end, { filter = { name = opts.name }, create = true })
+  end, { filter = filter, create = true })
 end
 
 ---@param opts? sidekick.cli.Show

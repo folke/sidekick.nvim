@@ -30,9 +30,23 @@ function M.get(opts)
   opts = vim.tbl_extend("force", {}, context_defaults, opts or {})
   local buf = vim.api.nvim_get_current_buf()
   if vim.b[buf].sidekick_cli then
-    buf = vim.api.nvim_win_get_buf(vim.fn.win_getid(vim.fn.winnr("#")))
+    local info = vim.fn.getbufinfo({ buflisted = true, bufloaded = true })
+    ---@param b vim.fn.getbufinfo.ret.item
+    info = vim.tbl_filter(function(b)
+      return not vim.b[b.bufnr].sidekick_cli
+    end, info)
+    -- sort all by lastused of the win buffer
+    table.sort(info, function(a, b)
+      if (a.hidden == 0) ~= (b.hidden == 0) then
+        return a.hidden == 0
+      end
+      return a.lastused < b.lastused
+    end)
+    if not info[1] then
+      return {}
+    end
+    buf = info[1].bufnr
   end
-  -- dd("context for " .. vim.api.nvim_buf_get_name(buf), opts)
   local ret = {} ---@type string[]
   if opts.location then
     ret[#ret + 1] = M.get_location(buf, opts.location == true and {} or opts.location)
