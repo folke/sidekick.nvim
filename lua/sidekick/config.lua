@@ -184,12 +184,14 @@ function M.setup(opts)
   end)
 end
 
----@param client vim.lsp.Client
+---@param client vim.lsp.Client|string
 function M.is_copilot(client)
-  return client.name and client.name:lower():find("copilot")
+  local name = type(client) == "table" and client.name or client --[[@as string]]
+  return name and name:lower():find("copilot")
 end
 
 ---@param filter? vim.lsp.get_clients.Filter
+---@return vim.lsp.Client[]
 function M.get_clients(filter)
   return vim.tbl_filter(M.is_copilot, vim.lsp.get_clients(filter))
 end
