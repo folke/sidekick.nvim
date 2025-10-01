@@ -101,6 +101,13 @@ local defaults = {
       grok = { cmd = { "grok" }, url = "https://github.com/superagent-ai/grok-cli" },
       opencode = { cmd = { "opencode" }, url = "https://github.com/sst/opencode" },
       qwen = { cmd = { "qwen" }, url = "https://github.com/QwenLM/qwen-code" },
+      q = {
+        cmd = { "q" },
+        url = "https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/command-line.html",
+        -- Aamzon Q exits with stderr when user is not authenticated. This will keep the pane when that happens. 
+        close_on_exit = false 
+      },
+
     },
     ---@type table<string, sidekick.Prompt>
     prompts = {
