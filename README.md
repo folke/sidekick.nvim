@@ -352,13 +352,7 @@ local defaults = {
       cursor = { cmd = { "cursor-agent" }, url = "https://cursor.com/cli" },
       gemini = { cmd = { "gemini" }, url = "https://github.com/google-gemini/gemini-cli" },
       grok = { cmd = { "grok" }, url = "https://github.com/superagent-ai/grok-cli" },
-      opencode = {
-        cmd = { "opencode" },
-        -- HACK: https://github.com/sst/opencode/issues/445
-        env = { OPENCODE_THEME = "system" },
-        url = "https://github.com/sst/opencode",
-      },
-      q = { cmd = { "q" }, url = "https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/command-line.html" },
+      opencode = { cmd = { "opencode" }, url = "https://github.com/sst/opencode" },
       qwen = { cmd = { "qwen" }, url = "https://github.com/QwenLM/qwen-code" },
     },
     ---@type table<string, sidekick.Prompt>
@@ -466,7 +460,6 @@ Sidekick preconfigures a handful of popular CLIs so you can get started quickly:
 - [`gemini`](https://github.com/google-gemini/gemini-cli) – Google’s Gemini CLI.
 - [`grok`](https://github.com/superagent-ai/grok-cli) – xAI’s Grok CLI.
 - [`opencode`](https://github.com/sst/opencode) – OpenCode’s CLI for local workflows.
-- [`q`](https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/command-line.html) – Amazon Q’s command-line interface.
 - [`qwen`](https://github.com/QwenLM/qwen-code) – Alibaba’s Qwen Code CLI.
 
 ## 📟 Statusline Integration

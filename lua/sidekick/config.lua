@@ -99,17 +99,7 @@ local defaults = {
       cursor = { cmd = { "cursor-agent" }, url = "https://cursor.com/cli" },
       gemini = { cmd = { "gemini" }, url = "https://github.com/google-gemini/gemini-cli" },
       grok = { cmd = { "grok" }, url = "https://github.com/superagent-ai/grok-cli" },
-      opencode = {
-        cmd = { "opencode" },
-        -- HACK: https://github.com/sst/opencode/issues/445
-        env = { OPENCODE_THEME = "system" },
-        url = "https://github.com/sst/opencode",
-      },
-      q = { 
-        cmd = { "q" }, 
-        url = "https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/command-line.html",
-        close_on_exit = false -- Keep CLI pane when Q CLI exits when user isn't logged in.
-      },
+      opencode = { cmd = { "opencode" }, url = "https://github.com/sst/opencode" },
       qwen = { cmd = { "qwen" }, url = "https://github.com/QwenLM/qwen-code" },
     },
     ---@type table<string, sidekick.Prompt>
