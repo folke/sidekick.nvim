@@ -287,6 +287,7 @@ local defaults = {
   },
   -- Work with AI cli tools directly from within Neovim
   cli = {
+    default = nil, -- name of the CLI tool to start when creating a new session
     watch = true, -- notify Neovim of file changes done by AI CLI tools
     win = {
       wo = {}, ---@type vim.wo
@@ -443,7 +444,9 @@ Keymaps that pair well with the defaults:
 ```
 
 Tune the behaviour via `Config.cli`: add your own tool definitions, tweak window
-layout, or extend the prompt list. See the defaults above for all available fields.
+layout, or extend the prompt list. Set `default` to the name of a configured tool
+to auto-start it when creating a new session. See the defaults above for all
+available fields.
 
 ### Default CLI tools
 

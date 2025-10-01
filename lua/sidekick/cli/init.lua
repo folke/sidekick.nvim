@@ -58,6 +58,42 @@ local M = {}
 ---@field [2] string|sidekick.cli.Action
 ---@field mode? string|string[]
 
+---@param filter? sidekick.cli.Filter
+---@return sidekick.cli.Tool?, string?
+local function resolve_default_tool(filter)
+  local default = Config.cli.default
+  if not default or default == "" then
+    return
+  end
+
+  filter = filter or {}
+  if filter.name ~= nil and filter.name ~= default then
+    return
+  end
+
+  local spec = Config.cli.tools[default]
+  if not spec then
+    return nil, ("CLI tool `%s` is not configured"):format(default)
+  end
+
+  ---@type sidekick.cli.Tool
+  local tool = vim.deepcopy(spec)
+  tool.name = default
+  tool.installed = vim.fn.executable(tool.cmd[1]) == 1
+  tool.running = false
+  tool.mux = false
+
+  if not M.is(tool, filter) then
+    return
+  end
+
+  if tool.installed then
+    return tool
+  end
+
+  return nil, ("`%s` is not installed"):format(tool.cmd[1])
+end
+
 ---@param opts? sidekick.cli.Select
 function M.select_tool(opts)
   opts = opts or {}
@@ -250,11 +286,20 @@ end
 function M.with(cb, opts)
   opts = opts or {}
   cb = vim.schedule_wrap(cb)
-  local terminals = M.get_terminals(opts.filter)
+  local filter = opts.filter
+  local terminals = M.get_terminals(filter)
   terminals = opts.all and terminals or { terminals[1] }
   if #terminals == 0 and opts.create then
+    local default_tool, err = resolve_default_tool(filter)
+    if default_tool then
+      cb(Terminal.new(default_tool))
+      return
+    end
+    if err then
+      Util.error(err)
+    end
     M.select_tool({
-      filter = opts.filter,
+      filter = filter,
       on_select = function(tool)
         if vim.fn.executable(tool.cmd[1]) == 0 then
           Util.error(("`%s` is not installed"):format(tool.cmd[1]))

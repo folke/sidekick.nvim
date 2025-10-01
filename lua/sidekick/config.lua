@@ -35,6 +35,8 @@ local defaults = {
   },
   -- Work with AI cli tools directly from within Neovim
   cli = {
+    ---@type string?
+    default = nil, -- name of the CLI tool to start when creating a new session
     watch = true, -- notify Neovim of file changes done by AI CLI tools
     win = {
       wo = {}, ---@type vim.wo
