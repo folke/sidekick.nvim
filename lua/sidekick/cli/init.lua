@@ -10,6 +10,7 @@ local M = {}
 ---@class sidekick.cli.Tool.spec
 ---@field cmd string[] Command to run the CLI tool
 ---@field env? table<string, string> Environment variables to set when running the command
+---@field close_on_exit? boolean default is true. Close the terminal when the command exits
 ---@field url? string Web URL to open when the tool is not installed
 ---@field keys? table<string, sidekick.cli.Keymap|false>
 

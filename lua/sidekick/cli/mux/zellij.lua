@@ -12,7 +12,7 @@ layout {
       borderless true
       focus true
       name "{name}"
-      close_on_exit true
+      close_on_exit {close_on_exit}
       {args}
    }
 }
@@ -29,6 +29,11 @@ function M:cmd()
   local layout = M.tpl
   layout = layout:gsub("{cmd}", self.tool.cmd[1])
   layout = layout:gsub("{name}", self.tool.name)
+  local close_on_exit = self.tool.close_on_exit
+  if close_on_exit == nil then -- Default to true
+    close_on_exit = true
+  end
+  layout = layout:gsub("{close_on_exit}", tostring(close_on_exit))
   if #self.tool.cmd == 1 then
     layout = layout:gsub("{args}", "")
   else

@@ -105,7 +105,11 @@ local defaults = {
         env = { OPENCODE_THEME = "system" },
         url = "https://github.com/sst/opencode",
       },
-      q = { cmd = { "q" }, url = "https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/command-line.html" },
+      q = { 
+        cmd = { "q" }, 
+        url = "https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/command-line.html",
+        close_on_exit = false -- Keep CLI pane when Q CLI exits when user isn't logged in.
+      },
       qwen = { cmd = { "qwen" }, url = "https://github.com/QwenLM/qwen-code" },
     },
     ---@type table<string, sidekick.Prompt>
