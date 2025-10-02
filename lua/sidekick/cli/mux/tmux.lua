@@ -1,4 +1,3 @@
-local Config = require("sidekick.config")
 local Util = require("sidekick.util")
 
 ---@class sidekick.cli.muxer.Tmux: sidekick.cli.Muxer
@@ -13,20 +12,9 @@ function M:cmd()
     return
   end
 
-  local conf = {} ---@type string[]
-  for _, f in ipairs({ "/etc/tmux.conf", "~/.tmux.conf", (vim.env.XDG_CONFIG_HOME or "~/.config") .. "/tmux/tmux.conf" }) do
-    f = vim.fs.normalize(f)
-    if vim.fn.filereadable(f) == 1 then
-      conf[#conf + 1] = "source-file " .. f
-    end
-  end
-
-  local conf_file = Config.state("tmux-" .. self.session.id .. ".conf")
-  vim.fn.writefile(conf, conf_file)
-
-  local tool_cmd_str = table.concat(self.tool.cmd, " ")
-  local new_shell_cmd = "tmux set-option status off; " .. tool_cmd_str
-  local cmd = { "tmux", "-f", conf_file, "new", "-A", "-s", self.session.id, new_shell_cmd }
+  local cmd = { "tmux", "new", "-A", "-s", self.session.id }
+  vim.list_extend(cmd, self.tool.cmd)
+  vim.list_extend(cmd, { ";", "set-option", "status", "off" })
   return { cmd = cmd }
 end
 
