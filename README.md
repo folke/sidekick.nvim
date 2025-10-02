@@ -451,7 +451,7 @@ layout, or extend the prompt list. See the defaults above for all available fiel
 
 Sidekick preconfigures a handful of popular CLIs so you can get started quickly:
 
-- [`aider`](https://github.com/anthropics/claude-code) Aider
+- [`aider`](https://github.com/Aider-AI/aider) Aider
 - [`claude`](https://github.com/anthropics/claude-code) – Anthropic’s official CLI.
 - [`codex`](https://github.com/openai/codex) – OpenAI’s Codex CLI.
 - [`copilot`](https://github.com/github/copilot-cli) – GitHub Copilot CLI.
