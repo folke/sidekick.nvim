@@ -614,6 +614,7 @@ in your statusline.
 ```lua
 {
   "nvim-lualine/lualine.nvim",
+  dependencies = { 'nvim-tree/nvim-web-devicons' },
   opts = {
     sections = {
       lualine_c = {
@@ -621,17 +622,17 @@ in your statusline.
           function()
             return " "
           end,
-           color = function()
+          color = function()
             local status = require("sidekick.status").get()
-              if status then
-                 return status.kind == "Error" and "DiagnosticError" or status.busy and "DiagnosticWarn" or
-                  "Special"
-               end
+            if status then
+              return status.kind == "Error" and "DiagnosticError" or status.busy and "DiagnosticWarn" or
+              "Special"
+            end
           end,
-           cond = function()
+          cond = function()
             local status = require("sidekick.status")
             return status.get() ~= nil
-           end,
+          end,
         },
       },
     },
