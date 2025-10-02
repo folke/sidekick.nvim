@@ -1,5 +1,58 @@
 # Changelog
 
+## [1.2.0](https://github.com/folke/sidekick.nvim/compare/v1.1.0...v1.2.0) (2025-10-02)
+
+
+### Features
+
+* added `:Sidekick` command ([2f17d6b](https://github.com/folke/sidekick.nvim/commit/2f17d6bdf245381149b2515401a37ee67364904f))
+* **cli.prompts:** when viewing the prompt select with snacks, you can copy with `<c-y>` and `y` in insert/normal mode ([f2098d9](https://github.com/folke/sidekick.nvim/commit/f2098d978dbf19a64283ebe98c901cae8c986960))
+* **cli:** added Amazon Q ([e84c5d0](https://github.com/folke/sidekick.nvim/commit/e84c5d0df454ded38d6cd1982c8f689ebdde8b4e))
+* **cli:** added proper multi-session management. you can now also resume mux sessions from other directories ([605c26b](https://github.com/folke/sidekick.nvim/commit/605c26b72eca9e310a67cb3ab8a4feaae4ca416f))
+* **cli:** allow dynamic terminal configuration. Closes [#25](https://github.com/folke/sidekick.nvim/issues/25) ([6b265fa](https://github.com/folke/sidekick.nvim/commit/6b265faa39a182fb3fe0e92166232a330ed26d60))
+* **cli:** allow overriding/adding keymaps per tool ([6def9f4](https://github.com/folke/sidekick.nvim/commit/6def9f4b1ae681c9b71c6ac054a67c0fe9773a4c))
+* **cli:** lots of prompt/context improvements ([8a1f761](https://github.com/folke/sidekick.nvim/commit/8a1f76109b0a126a304151d64b540a7392ee08a7))
+* **cli:** rework prompts/context and sending ([75b1897](https://github.com/folke/sidekick.nvim/commit/75b189707d087e8b142b10fd5dec8be03ef23ff4))
+* **config:** added aider ([5144187](https://github.com/folke/sidekick.nvim/commit/514418756189083767177099d85768d72c21f103))
+* **context:** lots of improvements to context including visual selection and proper previews ([7877322](https://github.com/folke/sidekick.nvim/commit/78773228c05461f40737680177de695e579b1ace))
+* **health:** added extra checks for duplicate Copilot LSP servers ([0b89f04](https://github.com/folke/sidekick.nvim/commit/0b89f04999065e8917eb480c9243a70e7ccdf147))
+* **nes:** added enable/disable/toggle for NES ([2d280e9](https://github.com/folke/sidekick.nvim/commit/2d280e931e02a44cb65c35d58ae42f55538866bc))
+* **nes:** disable nes fully when `enabled=false` ([11428c1](https://github.com/folke/sidekick.nvim/commit/11428c1e9890056136329dd4c0451dcb81feb830))
+* **nes:** trigger SidekickNesShow and SidekickNesHide after update. Closes [#19](https://github.com/folke/sidekick.nvim/issues/19) ([302cec7](https://github.com/folke/sidekick.nvim/commit/302cec770ca0a4b7dfafd7879034d33320592b33))
+* **terminal:** added full support for split / float layouts ([c93c0cb](https://github.com/folke/sidekick.nvim/commit/c93c0cbc2177a0eef19cf81adfe20329e4a90e83))
+* **terminal:** set `ft=sidekick_terminal` ([03366cc](https://github.com/folke/sidekick.nvim/commit/03366ccdcb9a58c140ad1c68c0da644d5d264f2f))
+* **tmux:** disable status bar in sidekick window ([#42](https://github.com/folke/sidekick.nvim/issues/42)) ([832165b](https://github.com/folke/sidekick.nvim/commit/832165bf84f40e3dd3a86c8d66835903e036013f))
+* **tmux:** pass custom config file including user's config with a disabled status bar. Closes [#36](https://github.com/folke/sidekick.nvim/issues/36) ([6f06163](https://github.com/folke/sidekick.nvim/commit/6f0616359540fcbfa5cf2ae88cbdf2a028331a86))
+* **tools:** added crush ([d6e25f3](https://github.com/folke/sidekick.nvim/commit/d6e25f370f9fd969158b40094bcbe7b75a776623))
+
+
+### Bug Fixes
+
+* **cli.context:** don't add a location for non-file buffers ([d72c611](https://github.com/folke/sidekick.nvim/commit/d72c611aa37b24d8ad401c4029d8946e27f53475))
+* **cli.context:** get the correct buffer for providing context ([754ee76](https://github.com/folke/sidekick.nvim/commit/754ee7640ba32ce0e2350a3604ac85ea00865f45))
+* **cli.context:** lastused sorting ([c448bb2](https://github.com/folke/sidekick.nvim/commit/c448bb2bd11fb1aaabd291eafe9759dc214c792e))
+* **cli.crush:** use `<a-p>` for prompt instead of `<c-p>` for crush, since it's needed for its own functionality. Fixes [#17](https://github.com/folke/sidekick.nvim/issues/17) ([efbce7a](https://github.com/folke/sidekick.nvim/commit/efbce7a7110f7aa1592ab875fde7f724094bf3a7))
+* **cli.prompts:** don't show empty rendered prompts in select ([d930586](https://github.com/folke/sidekick.nvim/commit/d930586085c970fe58356c2da9462572bb31d1dc))
+* **cli:** fup ([094080d](https://github.com/folke/sidekick.nvim/commit/094080d5ca5b1dbe474cbdcefac63436881c8fe3))
+* **cli:** prompt action ([8d9b06c](https://github.com/folke/sidekick.nvim/commit/8d9b06cabf5370f5e84798d86c84bc347cea859a))
+* **cli:** removed some default keymaps since they clash with cli tools. Closes [#30](https://github.com/folke/sidekick.nvim/issues/30) ([8519d3b](https://github.com/folke/sidekick.nvim/commit/8519d3b777b39273e8734ab9e00f1c4e39805896))
+* **cli:** set proper TERM for cli tools. Fixes [#37](https://github.com/folke/sidekick.nvim/issues/37) ([7608be2](https://github.com/folke/sidekick.nvim/commit/7608be2a532fe663e471bf23483e6537e73a0d51))
+* **health:** special checks for LSP server bundled with copilot.lua and copilot.vim. Fixes [#15](https://github.com/folke/sidekick.nvim/issues/15) ([d11ee7f](https://github.com/folke/sidekick.nvim/commit/d11ee7f7209d3417d1bc007f387b665db43117bc))
+* **mux:** `M:_sessions` -&gt; `M._sessions` ([c73cc39](https://github.com/folke/sidekick.nvim/commit/c73cc397cf4c01df774815d4f5e089390be3a59b))
+* **mux:** better commands to get existing sessions ([feea2b2](https://github.com/folke/sidekick.nvim/commit/feea2b2560cd9229f72bef74e0d0e69754c34d5f))
+* **nes:** allow any lsp server name containing `copilot` ([#9](https://github.com/folke/sidekick.nvim/issues/9)) ([74acbde](https://github.com/folke/sidekick.nvim/commit/74acbde14b824f67ba0194992bb669a053033711))
+* **nes:** delete at end of file triggered error ([7b8769f](https://github.com/folke/sidekick.nvim/commit/7b8769f7f6c820b66965b91382fcf34d3da5889f))
+* **opencode:** remove hack since it's no longer needed. See [#16](https://github.com/folke/sidekick.nvim/issues/16) ([f2dcd16](https://github.com/folke/sidekick.nvim/commit/f2dcd16641ebb7bedc86b3211d3f97c84954d4ae))
+* **opencode:** work-around for opencode rendering artifacts by forcing `system` theme. See [#16](https://github.com/folke/sidekick.nvim/issues/16) ([d29fbc9](https://github.com/folke/sidekick.nvim/commit/d29fbc90a3593ffcd00244a8c48a6dd373013353))
+* **terminal:** change initial delay from 2 seconds to 500 ms ([c7948f1](https://github.com/folke/sidekick.nvim/commit/c7948f12ae9c77433c95b701e46f05728e90cc44))
+* **terminal:** check for exit code ~= 0 ([5bd2d01](https://github.com/folke/sidekick.nvim/commit/5bd2d0163b3bbe35c4f7b464cf9b070c33e1c59f))
+* **terminal:** don't automatically close the terminal window when the command exited too quickly ([52a6ed4](https://github.com/folke/sidekick.nvim/commit/52a6ed40d312726a45ffc191fdc81791c4d928f5))
+* **terminal:** don't close when cli tool exits too quickly ([63ec164](https://github.com/folke/sidekick.nvim/commit/63ec164ea9e88731b1fc69533eefe908731a625d))
+* **terminal:** set winfixwidth and winfixheight when needed ([09dbae1](https://github.com/folke/sidekick.nvim/commit/09dbae13046193bf83d23e23297c678b62591424))
+* **terminal:** startinsert on focus and stopinsert on blur ([5e9f9da](https://github.com/folke/sidekick.nvim/commit/5e9f9da7bd53d4777a3ee1ff94f8355473d1ab4b))
+* **terminal:** use vim environ instead of uv ([0d99706](https://github.com/folke/sidekick.nvim/commit/0d997060670028544438fa3eb4d26c04492af1e7))
+* **zellij:** disable session serialization for AI tools ([71d17b9](https://github.com/folke/sidekick.nvim/commit/71d17b92648b84fbe654fec07934fd5dbef330e4))
+
 ## [1.1.0](https://github.com/folke/sidekick.nvim/compare/v1.0.0...v1.1.0) (2025-09-29)
 
 
