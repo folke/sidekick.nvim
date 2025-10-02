@@ -20,13 +20,13 @@ function M:cmd()
       conf[#conf + 1] = "source-file " .. f
     end
   end
-  conf[#conf + 1] = "set -g status off"
 
   local conf_file = Config.state("tmux-" .. self.session.id .. ".conf")
   vim.fn.writefile(conf, conf_file)
 
-  local cmd = { "tmux", "-f", conf_file, "new", "-A", "-s", self.session.id }
-  vim.list_extend(cmd, self.tool.cmd)
+  local tool_cmd_str = table.concat(self.tool.cmd, " ")
+  local new_shell_cmd = "tmux set-option status off; " .. tool_cmd_str
+  local cmd = { "tmux", "-f", conf_file, "new", "-A", "-s", self.session.id, new_shell_cmd }
   return { cmd = cmd }
 end
 
