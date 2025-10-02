@@ -105,7 +105,7 @@ Install with your favorite manager. With [lazy.nvim](https://github.com/folke/la
     },
     {
       "<leader>as",
-      function() require("sidekick.cli").send({ selection = true }) end,
+      function() require("sidekick.cli").send({ msg = "{selection}" }) end,
       mode = { "v" },
       desc = "Sidekick Send Visual Selection",
     },
@@ -314,11 +314,12 @@ local defaults = {
       --- default mode is `t`
       ---@type table<string, sidekick.cli.Keymap|false>
       keys = {
-        stopinsert = { "<esc><esc>", "stopinsert", mode = "t" }, -- enter normal mode
-        hide_n = { "q", "hide", mode = "n" }, -- hide from normal mode
-        hide_t = { "<c-q>", "hide" }, -- hide from terminal mode
+        -- -- diabled the soptinsert keymaps since it interfers with some tools
+        -- -- Use Neovim's default `<c-\><c-n>` instead
+        -- stopinsert = { "<c-o>", "stopinsert", mode = "t" }, -- enter normal mode
+        hide_n = { "q", "hide", mode = "n" }, -- hide the terminal window in normal mode
+        hide_t = { "<c-q>", "hide" }, -- hide the terminal window in terminal mode
         win_p = { "<c-w>p", "blur" }, -- leave the cli window
-        blur = { "<c-o>", "blur" }, -- leave the cli window
         prompt = { "<c-p>", "prompt" }, -- insert prompt or context
         -- example of custom keymap:
         -- say_hi = {
@@ -338,6 +339,7 @@ local defaults = {
     ---@type table<string, sidekick.cli.Tool.spec>
     tools = {
       aider = { cmd = { "aider" }, url = "https://github.com/Aider-AI/aider" },
+      amazon_q = { cmd = { "q" }, url = "https://github.com/aws/amazon-q-developer-cli" },
       claude = { cmd = { "claude" }, url = "https://github.com/anthropics/claude-code" },
       codex = { cmd = { "codex", "--search" }, url = "https://github.com/openai/codex" },
       copilot = { cmd = { "copilot", "--banner" }, url = "https://github.com/github/copilot-cli" },
@@ -362,29 +364,26 @@ local defaults = {
       },
 
     },
-    ---@type table<string, sidekick.Prompt>
+    --- Add custom context. See `lua/sidekick/context/init.lua`
+    ---@type table<string, sidekick.context.Fn>
+    context = {},
+    -- stylua: ignore
+    ---@type table<string, sidekick.Prompt|string|fun(ctx:sidekick.context.ctx):(string?)>
     prompts = {
-      explain = "Explain this code",
-      diagnostics = {
-        msg = "What do the diagnostics in this file mean?",
-        diagnostics = true,
-      },
-      diagnostics_all = {
-        msg = "Can you help me fix these issues?",
-        diagnostics = { all = true },
-      },
-      fix = {
-        msg = "Can you fix the issues in this code?",
-        diagnostics = true,
-      },
-      review = {
-        msg = "Can you review this code for any issues or improvements?",
-        diagnostics = true,
-      },
-      optimize = "How can this code be optimized?",
-      tests = "Can you write tests for this code?",
-      file = { location = { row = false, col = false } },
-      position = {},
+      changes         = "Can you review my changes?",
+      diagnostics     = "Can you help me fix the diagnostics in {file}?\n{diagnostics}",
+      diagnostics_all = "Can you help me fix these diagnostics?\n{diagnostics_all}",
+      document        = "Add documentation to {position}",
+      explain         = "Explain {this}",
+      fix             = "Can you fix {this}?",
+      optimize        = "How can {this} be optimized?",
+      review          = "Can you review {file} for any issues or improvements?",
+      tests           = "Can you write tests for {this}?",
+      -- simple context prompts
+      buffers         = "{buffers}",
+      file            = "{file}",
+      position        = "{position}",
+      selection       = "{selection}",
     },
   },
   copilot = {
@@ -458,7 +457,8 @@ layout, or extend the prompt list. See the defaults above for all available fiel
 
 Sidekick preconfigures a handful of popular CLIs so you can get started quickly:
 
-- [`aider`](https://github.com/anthropics/claude-code) Aider
+- [`aider`](https://github.com/Aider-AI/aider) - Aider CLI.
+- [`amazon_q`](https://github.com/aws/amazon-q-developer-cli) – Amazon Q CLI.
 - [`claude`](https://github.com/anthropics/claude-code) – Anthropic’s official CLI.
 - [`codex`](https://github.com/openai/codex) – OpenAI’s Codex CLI.
 - [`copilot`](https://github.com/github/copilot-cli) – GitHub Copilot CLI.

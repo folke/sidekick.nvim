@@ -11,8 +11,10 @@ function M:cmd()
     Util.error("tmux executable not found on $PATH")
     return
   end
+
   local cmd = { "tmux", "new", "-A", "-s", self.session.id }
   vim.list_extend(cmd, self.tool.cmd)
+  vim.list_extend(cmd, { ";", "set-option", "status", "off" })
   return { cmd = cmd }
 end
 

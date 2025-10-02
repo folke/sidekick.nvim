@@ -58,13 +58,25 @@ function M.set_extmark(buffer, ns_id, row, col, opts)
   return ret
 end
 
+--- Exit visual mode if in visual mode, and return the type of visual mode exited.
 function M.exit_visual_mode()
+  local kind, mode = M.visual_mode()
+  if not mode then
+    return
+  end
+  vim.cmd("normal! " .. mode)
+  return kind, mode
+end
+
+--- Exit visual mode if in visual mode, and return the type of visual mode exited.
+---@return sidekick.VisualMode?, string?
+function M.visual_mode()
+  ---@alias sidekick.VisualMode "char"|"line"|"block"
   local mode = vim.fn.mode()
   if not (mode:match("^[vV]$") or mode == "\22") then
     return
   end
-
-  vim.cmd("normal! " .. mode)
+  return (mode == "V" and "line" or mode == "v" and "char" or "block"), mode
 end
 
 ---@param str string

@@ -3,7 +3,7 @@ local Loc = require("sidekick.cli.context.location")
 local M = {}
 
 ---@param ctx? sidekick.context.ctx
----@param opts? sidekick.context.diagnostics.Opts
+---@param opts? vim.diagnostic.GetOpts|{all?:boolean}
 function M.get(ctx, opts)
   opts = opts or {}
   local diags = vim.diagnostic.get(opts.all ~= true and (ctx and ctx.buf) or nil, opts)
@@ -33,9 +33,15 @@ function M.get(ctx, opts)
     }
     vt[#vt + 1] = { " " }
 
-    local msg_text = (d.message or ""):gsub("\n", " ")
+    local msg_text = (d.message or "")
     local msg = require("sidekick.treesitter").get_virtual_lines(msg_text, { ft = "markdown_inline" })
-    vim.list_extend(vt, msg[1] or {})
+    for i, t in ipairs(msg) do
+      if i > 1 then
+        ret[#ret + 1] = vt
+        vt = {}
+      end
+      vim.list_extend(vt, t)
+    end
 
     local loc = Loc.get({
       row = lnum,

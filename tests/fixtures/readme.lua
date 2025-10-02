@@ -37,7 +37,7 @@ local base = {
     },
     {
       "<leader>as",
-      function() require("sidekick.cli").send({ selection = true }) end,
+      function() require("sidekick.cli").send({ msg = "{selection}" }) end,
       mode = { "v" },
       desc = "Sidekick Send Visual Selection",
     },

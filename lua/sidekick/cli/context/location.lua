@@ -1,15 +1,11 @@
 local M = {}
 
----@class sidekick.context.Loc: sidekick.context.ctx
----@field name? string
----@field win? integer
----@field buf? integer
-
----@param ctx sidekick.context.Loc
----@param opts? sidekick.context.location.Opts
+---@param ctx sidekick.context.ctx|{name?: string}
+---@param opts? {kind?: "file"|"line"|"position"}
 ---@return sidekick.Text[]
 function M.get(ctx, opts)
   opts = opts or {}
+  opts.kind = opts.kind or "position"
   assert(ctx.buf or ctx.name, "Either buf or name must be provided")
 
   local name = ctx.name or vim.api.nvim_buf_get_name(ctx.buf)
@@ -23,7 +19,7 @@ function M.get(ctx, opts)
   end
 
   local ret = {} ---@type sidekick.Text
-  if ctx.range and opts.range ~= false then
+  if opts.kind == "position" and ctx.range then
     local from, to = ctx.range.from, ctx.range.to
     if from[1] > to[1] or (from[1] == to[1] and from[2] > to[2]) then
       from, to = to, from
@@ -41,11 +37,11 @@ function M.get(ctx, opts)
       ret[#ret + 1] = { ":", "SnacksPickerDelim" }
       ret[#ret + 1] = { ("%d-%d:%d"):format(from[2] + 1, to[1], to[2] + 1), "SnacksPickerCol" }
     end
-  elseif opts.col ~= false and ctx.row and ctx.col then
+  elseif opts.kind == "position" and ctx.row and ctx.col then
     ret[#ret + 1] = { ("%d"):format(ctx.row), "SnacksPickerRow" }
     ret[#ret + 1] = { ":", "SnacksPickerDelim" }
     ret[#ret + 1] = { ("%d"):format(ctx.col), "SnacksPickerCol" }
-  elseif opts.row ~= false and ctx.row then
+  elseif (opts.kind == "position" or opts.kind == "line") and ctx.row then
     ret[#ret + 1] = { ("%d"):format(ctx.row), "SnacksPickerRow" }
   end
 
@@ -55,6 +51,13 @@ function M.get(ctx, opts)
   table.insert(ret, 1, { name, "SnacksPickerDir" })
   table.insert(ret, 1, { "@", "Bold" })
   return { ret }
+end
+
+---@param buf integer
+function M.is_file(buf)
+  return vim.bo[buf].buflisted
+    and vim.tbl_contains({ "", "help" }, vim.bo[buf].buftype)
+    and vim.fn.filereadable(vim.api.nvim_buf_get_name(buf)) == 1
 end
 
 return M

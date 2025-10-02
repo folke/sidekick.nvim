@@ -52,21 +52,23 @@ M.commands = {
     end,
   },
   debug = {
-    nes_add = function()
-      require("sidekick.debug").nes_add()
-    end,
-    nes_del = function()
-      require("sidekick.debug").nes_del()
-    end,
-    nes_patch = function()
-      require("sidekick.debug").nes_patch()
-    end,
-    nes_edit = function()
-      require("sidekick.debug").nes_edit()
-    end,
-    nes_inspect = function()
-      require("sidekick.debug").nes_inspect()
-    end,
+    nes = {
+      add = function()
+        require("sidekick.debug").nes_add()
+      end,
+      del = function()
+        require("sidekick.debug").nes_del()
+      end,
+      patch = function()
+        require("sidekick.debug").nes_patch()
+      end,
+      edit = function()
+        require("sidekick.debug").nes_edit()
+      end,
+      inspect = function()
+        require("sidekick.debug").nes_inspect()
+      end,
+    },
   },
 }
 

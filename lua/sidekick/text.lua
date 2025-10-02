@@ -92,4 +92,39 @@ function M.lines_width(vl)
   return ret
 end
 
+---@param data sidekick.context.Fn.ret
+---@return sidekick.Text[]
+function M.to_text(data)
+  if type(data) == "string" then
+    if data == "" then
+      return {}
+    end
+    return M.to_text(vim.split(data, "\n", { plain = true }))
+  end
+
+  ---@cast data string[]|sidekick.Text|sidekick.Text[]
+  if #data == 0 then
+    return {}
+  end
+
+  if type(data[1]) == "string" then
+    ---@cast data string[]
+    return vim.tbl_map(function(s)
+      return { { s } }
+    end, data)
+  end
+
+  ---@cast data sidekick.Text|sidekick.Text[]
+  if type(vim.tbl_get(data, 1, 1)) == "string" then
+    ---@cast data sidekick.Text
+    return { data }
+  end
+
+  if type(vim.tbl_get(data, 1, 1, 1)) == "string" then
+    ---@cast data sidekick.Text[]
+    return data
+  end
+  error("invalid data type: " .. vim.inspect(data))
+end
+
 return M

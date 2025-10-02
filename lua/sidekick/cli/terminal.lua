@@ -22,6 +22,8 @@ M.__index = M
 
 local INITIAL_SEND_DELAY = 500 -- ms
 local SEND_DELAY = 100 --ms
+local TERM_CLOSE_ERROR_DELAY = 3000 -- ms if the terminal errored, don't close the window
+local TERM_CLOSE_DELAY = 500 -- ms if the terminal closed too quickly, don't close the window
 
 M.terminals = {} ---@type table<string, sidekick.cli.Terminal>
 
@@ -197,8 +199,12 @@ function M:start()
     group = self.group,
     buffer = self.buf,
     callback = function()
-      -- don't close if the terminal failed to start
-      if vim.v.event.status ~= 0 and vim.uv.hrtime() - self.atime < 3e9 then
+      local ms = (vim.uv.hrtime() - self.atime) / 1e6
+      if ms < TERM_CLOSE_DELAY then
+        -- don't close if the terminal closed too quickly
+        return
+      elseif vim.v.event.status ~= 0 and ms < TERM_CLOSE_ERROR_DELAY then
+        -- don't close if the terminal failed to start
         return
       end
       vim.schedule(function()
