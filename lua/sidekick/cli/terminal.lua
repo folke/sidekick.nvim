@@ -281,19 +281,17 @@ function M:open_win()
     return
   end
 
-  local is_float = self.opts.layout == "float"
-
   ---@type vim.api.keyset.win_config
   local opts = vim.tbl_extend(
     "force",
-    vim.deepcopy(is_float and win_opts.float or win_opts.split),
-    vim.deepcopy(is_float and self.opts.float or self.opts.split)
+    vim.deepcopy(self:is_floating() and win_opts.float or win_opts.split),
+    vim.deepcopy(self:is_floating() and self.opts.float or self.opts.split)
   )
 
   opts.width = opts.width <= 1 and math.floor(vim.o.columns * opts.width) or opts.width
   opts.height = opts.height <= 1 and math.floor(vim.o.lines * opts.height) or opts.height
 
-  if is_float then
+  if self:is_floating() then
     opts.row = opts.row <= 1 and math.floor((vim.o.lines - (opts.height or 0)) * opts.row) or opts.row
     opts.col = opts.col <= 1 and math.floor((vim.o.columns - (opts.width or 0)) * opts.col) or opts.col
   else
@@ -316,11 +314,7 @@ function M:open_win()
 end
 
 function M:term_nav(cmd)
-  if not self:is_focused() then
-    return
-  end
-  local is_float = self.opts.layout == "float"
-  if is_float then
+  if not self:is_focused() or self:is_floating() then
     return
   end
   vim.cmd.wincmd(cmd)
