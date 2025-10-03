@@ -311,7 +311,7 @@ function M:open_win()
   end
 end
 
-function M:wincmd(cmd)
+function M:term_nav(cmd)
   if not self:is_focused() then
     return
   end
