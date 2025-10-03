@@ -315,6 +315,10 @@ function M:wincmd(cmd)
   if not self:is_focused() then
     return
   end
+  local is_float = self.opts.layout == "float"
+  if is_float then
+    return
+  end
   vim.cmd.wincmd(cmd)
   vim.cmd.stopinsert()
 end
