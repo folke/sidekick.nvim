@@ -131,6 +131,13 @@ Install with your favorite manager. With [lazy.nvim](https://github.com/folke/la
       mode = { "n", "x" },
       desc = "Sidekick Select Prompt",
     },
+    -- Example of a keybinding to move cursor to left window
+    {
+      "<c-h>",
+      function() require("sidekick.cli").term_nav("h") end,
+      mode = { "t" },
+      desc = "Go to Left Window",
+    },
     -- Example of a keybinding to open Claude directly
     {
       "<leader>ac",
