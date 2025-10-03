@@ -313,11 +313,11 @@ function M:open_win()
   end
 end
 
-function M:term_nav(cmd)
+function M:term_nav(dir)
   if not self:is_focused() or self:is_floating() then
     return
   end
-  vim.cmd.wincmd(cmd)
+  vim.cmd.wincmd(dir)
   vim.cmd.stopinsert()
 end
 

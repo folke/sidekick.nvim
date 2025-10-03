@@ -132,6 +132,17 @@ function M.focus(opts)
   })
 end
 
+--- Toggle focus of the terminal window directionally
+---@param dir string The direction to navigate (h, j, k, l)
+---@param opts? sidekick.cli.Show
+---@overload fun(dir: string, name: string)
+function M.term_nav(dir, opts)
+  opts = type(opts) == "string" and { name = opts } or opts or {}
+  M.with(function(t)
+    t:term_nav(dir)
+  end, { filter = { name = opts.name }, create = true })
+end
+
 ---@param opts? sidekick.cli.Hide
 ---@overload fun(name: string)
 function M.hide(opts)
