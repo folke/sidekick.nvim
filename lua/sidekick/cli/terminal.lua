@@ -126,6 +126,10 @@ function M:win_valid()
   return self.win and vim.api.nvim_win_is_valid(self.win)
 end
 
+function M:is_floating()
+  return self.opts.layout == "float"
+end
+
 function M:start()
   if self:is_running() then
     return
