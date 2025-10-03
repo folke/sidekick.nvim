@@ -311,6 +311,14 @@ function M:open_win()
   end
 end
 
+function M:wincmd(cmd)
+  if not self:is_focused() then
+    return
+  end
+  vim.cmd.wincmd(cmd)
+  vim.cmd.stopinsert()
+end
+
 function M:focus()
   self:show()
   if not self:is_running() then
