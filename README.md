@@ -125,6 +125,12 @@ Install with your favorite manager. With [lazy.nvim](https://github.com/folke/la
       mode = { "n", "x", "i", "t" },
       desc = "Sidekick Switch Focus",
     },
+    {
+      "<c-h>",
+      function() require("sidekick.cli").term_nav("h") end,
+      mode = { "t" },
+      desc = "Go to Left Window",
+    },
     -- Example of a keybinding to open Claude directly
     {
       "<leader>ac",
