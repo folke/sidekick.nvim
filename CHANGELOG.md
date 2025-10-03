@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.3.0](https://github.com/folke/sidekick.nvim/compare/v1.2.0...v1.3.0) (2025-10-03)
+
+
+### Features
+
+* **context:** added treesitter context `class`, `function`. You can add more in your config. ([8fb70e0](https://github.com/folke/sidekick.nvim/commit/8fb70e025a3dfd144944be7a1fa74b2af0e0f07d))
+
+
+### Bug Fixes
+
+* **cli:** fix insert mode for prompt action. Closes [#50](https://github.com/folke/sidekick.nvim/issues/50) ([8ebbd75](https://github.com/folke/sidekick.nvim/commit/8ebbd7578bcdd345b81ab0d3e6776133d6b0d140))
+* **cli:** properly propagate tool filter for show/toggle/focus. Closes [#57](https://github.com/folke/sidekick.nvim/issues/57) ([bc44db0](https://github.com/folke/sidekick.nvim/commit/bc44db09bbd5bd18551273d9349582b6e0f24bbc))
+* **mux:** shorter session names. Fixes [#56](https://github.com/folke/sidekick.nvim/issues/56) ([a4e62ce](https://github.com/folke/sidekick.nvim/commit/a4e62cef32b6404bcbe4ef568d8a9d206b3cdaa8))
+* **opencode:** set back to system theme, since it is still not working for some ([b2818ec](https://github.com/folke/sidekick.nvim/commit/b2818ec5edffe061ce10ec3ca19c9896e418b32f))
+* **terminal:** use `exepath()` on windows. See [#53](https://github.com/folke/sidekick.nvim/issues/53) ([c307316](https://github.com/folke/sidekick.nvim/commit/c307316f77d80fbe92bd571c59ce1868703fe411))
+* **terminal:** use shell on windows for jobstart when cmd is not an exe. See [#53](https://github.com/folke/sidekick.nvim/issues/53) ([3f1ccba](https://github.com/folke/sidekick.nvim/commit/3f1ccba5277417388a81598a4b7f08db849f29f7))
+* **test:** treesitter woes in tests ([af931db](https://github.com/folke/sidekick.nvim/commit/af931dbda2efb19777810955c4563a6d0ce3201a))
+
 ## [1.2.0](https://github.com/folke/sidekick.nvim/compare/v1.1.0...v1.2.0) (2025-10-02)
 
 
