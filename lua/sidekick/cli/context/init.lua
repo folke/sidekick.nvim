@@ -1,6 +1,7 @@
 local Config = require("sidekick.config")
 local Diag = require("sidekick.cli.context.diagnostics")
 local Loc = require("sidekick.cli.context.location")
+local Quickfix = require("sidekick.cli.context.quickfix")
 local Text = require("sidekick.text")
 local TextObject = require("sidekick.cli.context.textobject")
 local Util = require("sidekick.util")
@@ -40,6 +41,9 @@ M.context = {
   end,
   diagnostics_all = function(ctx)
     return Diag.get(ctx, { all = true })
+  end,
+  quickfix = function(ctx)
+    return Quickfix.get(ctx)
   end,
   selection = function(ctx)
     return require("sidekick.cli.context.selection").get(ctx)
