@@ -128,6 +128,7 @@ local defaults = {
       buffers         = "{buffers}",
       file            = "{file}",
       position        = "{position}",
+      quickfix        = "{quickfix}",
       selection       = "{selection}",
       ["function"]    = "{function}",
       class           = "{class}",

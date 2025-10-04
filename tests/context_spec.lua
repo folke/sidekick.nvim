@@ -441,6 +441,92 @@ describe("context module", function()
       end)
     end)
 
+    describe("quickfix", function()
+      local Text = require("sidekick.text")
+
+      before_each(function()
+        vim.fn.setqflist({}, "r", { items = {} })
+      end)
+
+      after_each(function()
+        vim.fn.setqflist({}, "r", { items = {} })
+      end)
+
+      it("returns entries from the quickfix list", function()
+        local tmp = vim.fn.tempname() .. ".lua"
+        vim.fn.writefile({ "local foo = 1", "error line" }, tmp)
+        local buf_nr = vim.fn.bufadd(tmp)
+        vim.fn.bufload(buf_nr)
+
+        vim.fn.setqflist({}, "r", {
+          title = "Test Quickfix",
+          items = {
+            {
+              bufnr = buf_nr,
+              lnum = 2,
+              col = 1,
+              text = "Test error message",
+              type = "E",
+            },
+          },
+        })
+
+        local ctx_data = Context.ctx()
+        local result = Context.context.quickfix(ctx_data)
+
+        assert.is_not_nil(result)
+        local lines = Text.lines(result)
+        assert.are.same("Quickfix: Test Quickfix", lines[1])
+        local rel = vim.fs.basename(tmp)
+        assert.is_true(lines[2]:find("- @", 1, true) ~= nil, lines[2])
+        assert.is_true(lines[2]:find(rel, 1, true) ~= nil, lines[2])
+        assert.is_true(lines[2]:find(":2", 1, true) ~= nil, lines[2])
+        assert.is_true(lines[2]:find("[E]", 1, true) ~= nil)
+        assert.is_true(lines[2]:find("Test error message", 1, true) ~= nil)
+
+        vim.api.nvim_buf_delete(buf_nr, { force = true })
+        vim.fn.delete(tmp)
+      end)
+
+      it("returns nil when quickfix list is empty", function()
+        vim.fn.setqflist({}, "r", { items = {} })
+
+        local ctx_data = Context.ctx()
+        local result = Context.context.quickfix(ctx_data)
+
+        assert.is_nil(result)
+      end)
+
+      it("omits command-style titles", function()
+        local tmp = vim.fn.tempname() .. ".lua"
+        vim.fn.writefile({ "local foo = 1" }, tmp)
+        local buf_nr = vim.fn.bufadd(tmp)
+        vim.fn.bufload(buf_nr)
+
+        vim.fn.setqflist({}, "r", {
+          title = ":setqflist()",
+          items = {
+            {
+              bufnr = buf_nr,
+              lnum = 1,
+              col = 1,
+              text = "message",
+            },
+          },
+        })
+
+        local ctx_data = Context.ctx()
+        local result = Context.context.quickfix(ctx_data)
+
+        assert.is_not_nil(result)
+        local lines = Text.lines(result)
+        assert.is_true(lines[1]:find("- @", 1, true) ~= nil)
+
+        vim.api.nvim_buf_delete(buf_nr, { force = true })
+        vim.fn.delete(tmp)
+      end)
+    end)
+
     describe("selection", function()
       it("returns selection text when in visual mode", function()
         vim.api.nvim_buf_set_lines(buf, 0, -1, false, { "select me" })
