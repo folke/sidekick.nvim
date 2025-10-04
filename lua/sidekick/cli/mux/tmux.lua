@@ -15,6 +15,7 @@ function M:cmd()
   local cmd = { "tmux", "new", "-A", "-s", self.session.id }
   vim.list_extend(cmd, self.tool.cmd)
   vim.list_extend(cmd, { ";", "set-option", "status", "off" })
+  vim.list_extend(cmd, { ";", "set-option", "detach-on-destroy", "on" })
   return { cmd = cmd }
 end
 
