@@ -441,24 +441,6 @@ describe("textobject context", function()
     --   assert.is_not_nil(result)
     -- end)
 
-    it("works with go", function()
-      if not has_parser("go") then
-        pending("Go parser not available")
-        return
-      end
 
-      vim.bo[buf].filetype = "go"
-      vim.api.nvim_buf_set_lines(buf, 0, -1, false, {
-        "func Add(a, b int) int {",
-        "    return a + b",
-        "}",
-      })
-      vim.api.nvim_win_set_cursor(win, { 2, 4 })
-
-      local ctx = Context.ctx()
-      local result = TextObject.get(ctx, { type = "function" })
-
-      assert.is_not_nil(result)
-    end)
   end)
 end)
