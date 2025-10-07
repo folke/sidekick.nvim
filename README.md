@@ -304,10 +304,19 @@ local defaults = {
     ---@class sidekick.cli.Mux
     ---@field backend? "tmux"|"zellij" Multiplexer backend to persist CLI sessions
     mux = {
-      backend = "zellij",
+      backend = "tmux",
       enabled = false,
+      -- terminal: new sessions will be created for each CLI tool and shown in a Neovim terminal
+      -- window: when run inside a terminal multiplexer, new sessions will be created in a new tab
+      -- split: when run inside a terminal multiplexer, new sessions will be created in a new split
+      -- NOTE: zellij only supports `terminal`
+      create = "terminal", ---@type "terminal"|"window"|"split"
+      split = {
+        vertical = true, -- vertical or horizontal split
+        size = 0.5, -- size of the split (0-1 for percentage)
+      },
     },
-    ---@type table<string, sidekick.cli.Tool.spec>
+    ---@type table<string, sidekick.cli.Config|{}>
     tools = {
       aider = { cmd = { "aider" }, url = "https://github.com/Aider-AI/aider" },
       amazon_q = { cmd = { "q" }, url = "https://github.com/aws/amazon-q-developer-cli" },
