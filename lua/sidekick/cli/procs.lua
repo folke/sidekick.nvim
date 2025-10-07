@@ -1,15 +1,35 @@
 local Util = require("sidekick.util")
 
+local have_proc = vim.uv.fs_stat("/proc/self") ~= nil
+
 ---@param pid number
 local function get_env(pid)
   local env = {} ---@type table<string, string>
-  local e = io.open("/proc/" .. pid .. "/environ", "r")
-  if e then
-    local env_data = e:read("*all")
-    e:close()
-    local env_lines = vim.split(env_data, "\0")
-    for _, env_line in ipairs(env_lines) do
-      local k, v = env_line:match("^(.-)=(.*)$")
+
+  if have_proc then
+    -- Linux: use /proc filesystem
+    local e = io.open("/proc/" .. pid .. "/environ", "r")
+    if e then
+      local env_data = e:read("*all")
+      e:close()
+      local env_lines = vim.split(env_data, "\0")
+      for _, env_line in ipairs(env_lines) do
+        local k, v = env_line:match("^(.-)=(.*)$")
+        if k and v then
+          env[k] = v
+        end
+      end
+    end
+  end
+
+  -- try ps as a fallback (macOS and others)
+  local lines = Util.exec({ "ps", "eww", "-p", tostring(pid) })
+  if lines and #lines > 0 then
+    -- ps eww output format: PID command ENV1=val1 ENV2=val2 ...
+    local line = lines[1]
+    -- Skip the PID and command, extract environment variables
+    for env_var in line:gmatch("(%w+=[^%s]+)") do
+      local k, v = env_var:match("^(.-)=(.*)$")
       if k and v then
         env[k] = v
       end
@@ -20,8 +40,22 @@ end
 
 ---@param pid number
 local function get_cwd(pid)
-  local ret = vim.uv.fs_readlink("/proc/" .. pid .. "/cwd")
-  return ret and vim.fs.normalize(ret) or false
+  if have_proc then
+    -- Linux: use /proc filesystem
+    local ret = vim.uv.fs_readlink("/proc/" .. pid .. "/cwd")
+    return ret and vim.fs.normalize(ret) or false
+  end
+
+  -- try lsof as a fallback (macOS and others)
+  local lines = Util.exec({ "lsof", "-a", "-d", "cwd", "-p", tostring(pid), "-Fn" })
+  for _, line in ipairs(lines or {}) do
+    -- lsof -Fn output format: n/path/to/cwd
+    local path = line:match("^n(.+)$")
+    if path then
+      return vim.fs.normalize(path)
+    end
+  end
+  return false
 end
 
 local proc_fields = { env = get_env, cwd = get_cwd }
@@ -53,7 +87,10 @@ function M:update()
   if vim.fn.has("win32") == 1 then
     return
   end
-  local lines = Util.exec({ "ps", "-u", vim.env.USER or "", "-ww", "-o", "pid,ppid,args", "--no-headers" })
+
+  local lines = Util.exec({ "ps", "-u", vim.env.USER or "", "-ww", "-o", "pid,ppid,args" })
+  lines = vim.list_slice(lines or {}, 2) -- skip header
+
   for _, line in ipairs(lines or {}) do
     local pid, ppid, cmd = line:match("^%s*(%d+)%s+(%d+)%s+(.*)$")
     if pid and ppid and cmd then
