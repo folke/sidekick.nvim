@@ -1,11 +1,13 @@
 local Config = require("sidekick.config")
-local Mux = require("sidekick.cli.mux")
 local Session = require("sidekick.cli.session")
 local Util = require("sidekick.util")
 
----@class sidekick.cli.Terminal
----@field tool sidekick.cli.Tool
----@field session sidekick.cli.Session
+---@class sidekick.cli.terminal.Cmd
+---@field name string Name of the tool
+---@field cmd string[] Command to run the CLI tool
+---@field env? table<string, string> Environment variables to set when running the command
+
+---@class sidekick.cli.Terminal: sidekick.cli.Session
 ---@field opts sidekick.win.Opts
 ---@field group integer
 ---@field ctime integer
@@ -16,7 +18,6 @@ local Util = require("sidekick.util")
 ---@field job? integer
 ---@field buf? integer
 ---@field win? integer
----@field mux? sidekick.cli.Muxer
 local M = {}
 M.__index = M
 
@@ -82,33 +83,33 @@ function M.get(session_id)
   return M.terminals[session_id]
 end
 
+---@return sidekick.cli.session.State[]
 function M.sessions()
-  local ret = {} ---@type table<string, sidekick.cli.Session>
-  for _, t in pairs(M.terminals) do
-    ret[t.session.id] = t.session
-  end
-  return ret
+  return vim.tbl_values(M.terminals)
 end
 
----@param tool sidekick.cli.Tool
-function M.new(tool)
-  local existing = tool.session and M.get(tool.session.id)
-  if existing then
-    return existing
-  end
-  local self = setmetatable({}, M)
-  self.tool = tool
+---@param opts sidekick.cli.session.Opts
+function M.new(opts)
+  opts.backend = "terminal"
+  return Session.new(opts) --[[@as sidekick.cli.Terminal]]
+end
+
+function M:init()
   self.opts = vim.deepcopy(Config.cli.win)
   self.ctime = vim.uv.hrtime()
-  self.session = tool.session or Session.new(tool)
   self.atime = self.ctime
   self.send_queue = {}
-  self.group = vim.api.nvim_create_augroup("sidekick_cli_" .. self.session.id, { clear = true })
-  M.terminals[self.session.id] = self
+  self.attached = true
+  self.group = vim.api.nvim_create_augroup("sidekick_cli_" .. self.id, { clear = true })
+  M.terminals[self.id] = self
   if Config.cli.win.config then
     Config.cli.win.config(self)
   end
   return self
+end
+
+function M:attach()
+  self.attached = true
 end
 
 function M:is_running()
@@ -128,26 +129,16 @@ function M:start()
     return
   end
 
-  if Config.cli.mux.enabled then
-    self.mux = Mux.new(self.tool, self.session)
-    if not self.mux then
-      return
-    end
-    Session.save(self.session)
-  end
-
-  local cmd = self.mux and self.mux:cmd() or self.tool
-
   self.buf = vim.api.nvim_create_buf(false, true)
   for k, v in pairs(merge(vim.deepcopy(bo), self.opts.bo)) do
     ---@diagnostic disable-next-line: no-unknown
     vim.bo[self.buf][k] = v
   end
-  vim.b[self.buf].sidekick_cli = self.tool.name
+  vim.b[self.buf].sidekick_cli = self.tool
 
   local Actions = require("sidekick.cli.actions")
 
-  ---@type table<string, sidekick.cli.Tool.spec>
+  ---@type table<string, sidekick.cli.Keymap|false>
   local keys = vim.tbl_extend("force", {}, self.opts.keys, self.tool.keys or {})
   for name, km in pairs(keys) do
     if type(km) == "table" then
@@ -213,18 +204,19 @@ function M:start()
     end,
   })
 
-  local norm_cmd = vim.deepcopy(cmd.cmd) ---@type string|string[]
+  local norm_cmd = vim.deepcopy(self.tool.cmd) ---@type string|string[]
   if vim.fn.has("win32") == 1 then
     local cmd1 = vim.fn.exepath(norm_cmd[1])
-    if cmd1 == "" or not cmd1:find("%.exe") then
-      norm_cmd = table.concat(cmd.cmd, " ")
+    if cmd1 == "" or not cmd1:find("%.exe$") then
+      norm_cmd = table.concat(self.tool.cmd, " ")
     else
       norm_cmd[1] = cmd1
     end
   end
 
   vim.api.nvim_win_call(self.win, function()
-    local env = vim.tbl_extend("force", {}, vim.uv.os_environ(), self.tool.env or {}, cmd.env or {}, {
+    ---@type table<string, string|false>
+    local env = vim.tbl_extend("force", {}, vim.uv.os_environ(), self.tool.config.env or {}, self.tool.env or {}, {
       NVIM = vim.v.servername,
       NVIM_LISTEN_ADDRESS = false,
       NVIM_LOG_FILE = false,
@@ -239,7 +231,7 @@ function M:start()
       end
     end
     self.job = vim.fn.jobstart(norm_cmd, {
-      cwd = self.session.cwd,
+      cwd = self.cwd,
       term = true,
       clear_env = true,
       env = not vim.tbl_isempty(env) and env or nil,
@@ -247,11 +239,13 @@ function M:start()
   end)
 
   if self.job <= 0 then
-    local display = table.concat(cmd.cmd, " ")
+    local display = table.concat(self.tool.cmd, " ")
     Util.error("Failed to run `" .. display .. "`")
     self:close()
     return
   end
+  self.started = true
+  self.attached = true
 
   self.timer = vim.uv.new_timer()
   self.timer:start(INITIAL_SEND_DELAY, SEND_DELAY, function()
@@ -348,7 +342,7 @@ function M:hide()
 end
 
 function M:close()
-  M.terminals[self.session.id] = nil
+  M.terminals[self.id] = nil
   if vim.tbl_isempty(M.terminals) then
     require("sidekick.cli.watch").disable()
   end
@@ -362,7 +356,6 @@ function M:close()
     vim.fn.jobstop(self.job)
     self.job = nil
   end
-  self.mux = nil
   if self.buf and vim.api.nvim_buf_is_valid(self.buf) then
     vim.api.nvim_buf_delete(self.buf, { force = true })
     self.buf = nil

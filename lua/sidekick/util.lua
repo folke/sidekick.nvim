@@ -1,29 +1,30 @@
 local M = {}
 
----@param msg string
+---@param msg string|string[]
 ---@param level? vim.log.levels
 function M.notify(msg, level)
+  msg = type(msg) == "table" and table.concat(msg, "\n") or msg
   vim.schedule(function()
     vim.notify(msg, level or vim.log.levels.INFO, { title = "Sidekick" })
   end)
 end
 
----@param msg string
+---@param msg string|string[]
 function M.info(msg)
   M.notify(msg, vim.log.levels.INFO)
 end
 
----@param msg string
+---@param msg string|string[]
 function M.error(msg)
   M.notify(msg, vim.log.levels.ERROR)
 end
 
----@param msg string
+---@param msg string|string[]
 function M.warn(msg)
   M.notify(msg, vim.log.levels.WARN)
 end
 
----@param msg string
+---@param msg string|string[]
 function M.debug(msg)
   if require("sidekick.config").debug then
     M.warn(msg)
@@ -151,6 +152,76 @@ function M.exec(cmd, opts)
     return nil
   end
   return vim.split(result.stdout, "\n", { plain = true, trimempty = true })
+end
+
+---@class sidekick.util.Curl
+---@field method? "GET"|"POST"|"PUT"|"DELETE" HTTP method
+---@field headers? table<string, string> HTTP headers
+---@field data? any Request body
+
+---@param url string
+---@param opts? sidekick.util.Curl
+---@return string? response
+function M.curl(url, opts)
+  opts = opts or {}
+
+  local cmd = { "curl", "-s", "-S" }
+
+  if opts.method then
+    vim.list_extend(cmd, { "-X", opts.method })
+  end
+
+  for key, value in pairs(opts.headers or {}) do
+    vim.list_extend(cmd, { "-H", ("%s: %s"):format(key, value) })
+  end
+
+  -- Handle JSON data
+  if type(opts.data) == "string" then
+    vim.list_extend(cmd, { "-d", opts.data })
+  elseif opts.data ~= nil then
+    local ok, json = pcall(vim.json.encode, opts.data)
+    if not ok then
+      M.error("Failed to encode JSON data")
+      return
+    end
+    vim.list_extend(cmd, { "-H", "Content-Type: application/json" })
+    vim.list_extend(cmd, { "-d", json })
+  end
+
+  table.insert(cmd, url)
+
+  local ret = M.exec(cmd)
+  return ret and table.concat(ret, "\n") or nil
+end
+
+local state_dir = vim.fn.stdpath("state") .. "/sidekick"
+
+---@param key string
+---@param value any
+function M.set_state(key, value)
+  vim.fn.mkdir(state_dir, "p")
+  local path = state_dir .. "/" .. key .. ".json"
+  local ok, data = pcall(vim.json.encode, value)
+  if ok then
+    local f = io.open(path, "w")
+    if f then
+      f:write(data)
+      f:close()
+    end
+  end
+end
+
+---@param key string
+---@return any
+function M.get_state(key)
+  local path = state_dir .. "/" .. key .. ".json"
+  local f = io.open(path, "r")
+  if f then
+    local data = f:read("*a")
+    f:close()
+    local ok, result = pcall(vim.json.decode, data)
+    return ok and result or nil
+  end
 end
 
 return M

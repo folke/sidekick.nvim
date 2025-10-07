@@ -1,4 +1,4 @@
-*sidekick.nvim.txt*           For Neovim          Last change: 2025 October 03
+*sidekick.nvim.txt*           For Neovim          Last change: 2025 October 07
 
 ==============================================================================
 Table of Contents                            *sidekick.nvim-table-of-contents*
@@ -9,11 +9,10 @@ Table of Contents                            *sidekick.nvim-table-of-contents*
   - Quick Start                      |sidekick.nvim-sidekick.nvim-quick-start|
   - Installation                    |sidekick.nvim-sidekick.nvim-installation|
   - Configuration                  |sidekick.nvim-sidekick.nvim-configuration|
-  - Usage                                  |sidekick.nvim-sidekick.nvim-usage|
+  - Next Edit Suggestions (NES)|sidekick.nvim-sidekick.nvim-next-edit-suggestions-(nes)|
   - AI CLI Integration        |sidekick.nvim-sidekick.nvim-ai-cli-integration|
   - Commands                            |sidekick.nvim-sidekick.nvim-commands|
   - Statusline Integration|sidekick.nvim-sidekick.nvim-statusline-integration|
-  - Troubleshooting              |sidekick.nvim-sidekick.nvim-troubleshooting|
   - FAQ                                      |sidekick.nvim-sidekick.nvim-faq|
 
 ==============================================================================
@@ -307,10 +306,19 @@ Default settings ~
         ---@class sidekick.cli.Mux
         ---@field backend? "tmux"|"zellij" Multiplexer backend to persist CLI sessions
         mux = {
-          backend = "zellij",
+          backend = "tmux",
           enabled = false,
+          -- terminal: new sessions will be created for each CLI tool and shown in a Neovim terminal
+          -- window: when run inside a terminal multiplexer, new sessions will be created in a new tab
+          -- split: when run inside a terminal multiplexer, new sessions will be created in a new split
+          -- NOTE: zellij only supports `terminal`
+          create = "terminal", ---@type "terminal"|"window"|"split"
+          split = {
+            vertical = true, -- vertical or horizontal split
+            size = 0.5, -- size of the split (0-1 for percentage)
+          },
         },
-        ---@type table<string, sidekick.cli.Tool.spec>
+        ---@type table<string, sidekick.cli.Config|{}>
         tools = {
           aider = { cmd = { "aider" }, url = "https://github.com/Aider-AI/aider" },
           amazon_q = { cmd = { "q" }, url = "https://github.com/aws/amazon-q-developer-cli" },
@@ -371,18 +379,19 @@ Default settings ~
 <
 
 
-USAGE                                      *sidekick.nvim-sidekick.nvim-usage*
+NEXT EDIT SUGGESTIONS (NES)*sidekick.nvim-sidekick.nvim-next-edit-suggestions-(nes)*
 
-- Copilot NES requests run automatically when you leave insert mode,
-    modify text in normal mode, or after applying an edit.
-- Use the helper functions to control suggestions manually:
-    - `require("sidekick.nes").update()` – request fresh edits for the current buffer.
-    - `require("sidekick.nes").jump()` – move the cursor to the first suggested hunk.
-    - `require("sidekick.nes").apply()` – apply all pending edits and emit the
-        `User SidekickNesDone` autocmd.
-    - `require("sidekick").clear()` – cancel requests and hide overlays.
-    - `require("sidekick.nes").have()` – check if any edits are active in the buffer.
-- Hook into the `User` autocmd (`pattern = "SidekickNesDone"`) to run follow-up logic
+Copilot NES requests run automatically when you leave insert mode, modify text
+in normal mode, or after applying an edit.
+
+Use the helper functions to control suggestions manually:
+
+- `require("sidekick.nes").update()` – request fresh edits for the current buffer.
+- `require("sidekick.nes").jump()` – move the cursor to the first suggested hunk.
+- `require("sidekick.nes").apply()` – apply all pending edits and emit the
+    `User SidekickNesDone` autocmd.
+- `require("sidekick").clear()` – cancel requests and hide overlays.
+- `require("sidekick.nes").have()` – check if any edits are active in the buffer.
     after an edit has been applied.
 
 
@@ -436,7 +445,7 @@ information about the current file, selection, diagnostics, and more.
 
 
 
-**Available Prompts:**
+Available Prompts ~
 
 - **changes**: `Can you review my changes?`
 - **diagnostics**: `Can you help me fix the diagnostics in {file}?\n{diagnostics}`
@@ -448,7 +457,7 @@ information about the current file, selection, diagnostics, and more.
 - **review**: `Can you review {file} for any issues or improvements?`
 - **tests**: `Can you write tests for {this}?`
 
-**Available Context Variables:**
+Available Context Variables ~
 
 - `{buffers}`: A list of all open buffers.
 - `{file}`: The current file path.
@@ -574,8 +583,7 @@ This is equivalent to the following Lua code:
     require("sidekick.cli").show({ name = "claude" })
 <
 
-
-AVAILABLE COMMANDS ~
+Available Commands ~
 
 Here’s a list of the available commands:
 
@@ -598,8 +606,7 @@ Here’s a list of the available commands:
 - `send`: Send a message to the current CLI tool.
 - `prompt`: Select a prompt to send to the current CLI tool.
 
-
-EXAMPLES ~
+Examples ~
 
 Here are some examples of how to use the `:Sidekick` command:
 
@@ -662,51 +669,17 @@ Example for lualine.nvim ~
 <
 
 
-TROUBLESHOOTING                  *sidekick.nvim-sidekick.nvim-troubleshooting*
-
-
-NES NOT SHOWING SUGGESTIONS? ~
-
-1. Run `:checkhealth sidekick` to verify your setup
-2. Check Copilot is signed in: `:LspCopilotSignIn`
-3. Verify the LSP is attached: `:lua vim.print(require("sidekick.config").get_client())`
-4. Try manually triggering: `:Sidekick nes update`
-5. Check if NES is enabled: `:lua vim.print(require("sidekick.config").nes.enabled)`
-
-
-CLI TOOLS NOT STARTING? ~
-
-1. Verify the tool is installed: `which claude` (or your tool name)
-2. Check `:checkhealth sidekick` for tool installation status
-3. Try running the tool directly in your terminal first
-4. Check for errors with `:messages` after attempting to start
-
-
-PERFORMANCE ISSUES WITH LARGE FILES? ~
-
-- **Increase debounce delay**: `opts = { nes = { debounce = 300 } }`
-- **Disable inline diffs**: `opts = { nes = { diff = { inline = false } } }`
-- **Disable NES for specific buffers**: `vim.b.sidekick_nes = false`
-- **Reduce trigger events**: Customize `nes.trigger.events` to be less frequent
-
-
-TERMINAL SESSIONS NOT PERSISTING? ~
-
-Make sure you have tmux or zellij installed and enable the multiplexer:
-
->lua
-    opts = {
-      cli = {
-        mux = {
-          enabled = true,
-          backend = "zellij", -- or "tmux"
-        },
-      },
-    }
-<
-
-
 FAQ                                          *sidekick.nvim-sidekick.nvim-faq*
+
+
+DOES SIDEKICK.NVIM REPLACE COPILOT’S INLINE SUGGESTIONS? ~
+
+No! NES complements inline suggestions. They serve different purposes:
+
+- **Inline completions**: Quick, as-you-type suggestions (use copilot.lua or native `vim.lsp.inline_completion`)
+- **NES**: Larger refactorings and multi-line changes after you pause
+
+You’ll want both for the best experience.
 
 
 HOW IS THIS DIFFERENT FROM COPILOT.LUA OR COPILOT.VIM? ~
@@ -718,6 +691,38 @@ you type). `sidekick.nvim` adds:
 - **AI CLI Integration**: Built-in terminal for Claude, Gemini, and other AI tools
 
 Use them together for the complete experience!
+
+
+NES NOT SHOWING SUGGESTIONS? ~
+
+1. Run `:checkhealth sidekick` to verify your setup
+2. Check Copilot is signed in: `:LspCopilotSignIn`
+3. Verify the LSP is attached: `:lua vim.print(require("sidekick.config").get_client())`
+4. Try manually triggering: `:Sidekick nes update`
+
+
+CLI TOOLS NOT STARTING? ~
+
+1. Verify the tool is installed: `which claude` (or your tool name)
+2. Check `:checkhealth sidekick` for tool installation status
+3. Try running the tool directly in your terminal first
+4. Check for errors with `:messages` after attempting to start
+
+
+TERMINAL SESSIONS NOT PERSISTING? ~
+
+Make sure you have tmux or zellij installed and enable the multiplexer:
+
+>lua
+    opts = {
+      cli = {
+        mux = {
+          enabled = true,
+          backend = "tmux", -- or "zellij"
+        },
+      },
+    }
+<
 
 
 DO I NEED A GITHUB COPILOT SUBSCRIPTION? ~
@@ -754,7 +759,6 @@ Add it to the `cli.tools` configuration:
         tools = {
           my_tool = {
             cmd = { "my-ai-cli", "--flag" },
-            url = "https://github.com/example/my-tool",
             -- Optional: custom keymaps for this tool
             keys = {
               submit = { "<c-s>", function(t) t:send("\n") end },
@@ -764,16 +768,6 @@ Add it to the `cli.tools` configuration:
       },
     }
 <
-
-
-DOES SIDEKICK.NVIM REPLACE COPILOT’S INLINE SUGGESTIONS? ~
-
-No! NES complements inline suggestions. They serve different purposes:
-
-- **Inline completions**: Quick, as-you-type suggestions (use copilot.lua or native `vim.lsp.inline_completion`)
-- **NES**: Larger refactorings and multi-line changes after you pause
-
-You’ll want both for the best experience.
 
 
 HOW DO I CREATE CUSTOM PROMPTS? ~
