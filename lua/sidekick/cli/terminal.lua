@@ -207,7 +207,7 @@ function M:start()
   local norm_cmd = vim.deepcopy(self.tool.cmd) ---@type string|string[]
   if vim.fn.has("win32") == 1 then
     local cmd1 = vim.fn.exepath(norm_cmd[1])
-    if cmd1 == "" or not cmd1:find("%.exe^") then
+    if cmd1 == "" or not cmd1:find("%.exe$") then
       norm_cmd = table.concat(self.tool.cmd, " ")
     else
       norm_cmd[1] = cmd1
