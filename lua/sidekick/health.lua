@@ -76,8 +76,12 @@ function M.check()
     end
   end
 
-  for _, tool in ipairs(require("sidekick.cli").get_tools()) do
-    if tool.installed then
+  local tools = require("sidekick.config").tools()
+  local tool_names = vim.tbl_keys(tools) ---@type string[]
+  table.sort(tool_names)
+  for _, name in ipairs(tool_names) do
+    local tool = tools[name]
+    if vim.fn.executable(tool.cmd[1]) == 1 then
       ok("`" .. tool.name .. "` is installed")
     else
       warn("`" .. tool.name .. "` is not installed")

@@ -1,29 +1,30 @@
 local M = {}
 
----@param msg string
+---@param msg string|string[]
 ---@param level? vim.log.levels
 function M.notify(msg, level)
+  msg = type(msg) == "table" and table.concat(msg, "\n") or msg
   vim.schedule(function()
     vim.notify(msg, level or vim.log.levels.INFO, { title = "Sidekick" })
   end)
 end
 
----@param msg string
+---@param msg string|string[]
 function M.info(msg)
   M.notify(msg, vim.log.levels.INFO)
 end
 
----@param msg string
+---@param msg string|string[]
 function M.error(msg)
   M.notify(msg, vim.log.levels.ERROR)
 end
 
----@param msg string
+---@param msg string|string[]
 function M.warn(msg)
   M.notify(msg, vim.log.levels.WARN)
 end
 
----@param msg string
+---@param msg string|string[]
 function M.debug(msg)
   if require("sidekick.config").debug then
     M.warn(msg)
@@ -151,6 +152,36 @@ function M.exec(cmd, opts)
     return nil
   end
   return vim.split(result.stdout, "\n", { plain = true, trimempty = true })
+end
+
+local state_dir = vim.fn.stdpath("state") .. "/sidekick"
+
+---@param key string
+---@param value any
+function M.set_state(key, value)
+  vim.fn.mkdir(state_dir, "p")
+  local path = state_dir .. "/" .. key .. ".json"
+  local ok, data = pcall(vim.json.encode, value)
+  if ok then
+    local f = io.open(path, "w")
+    if f then
+      f:write(data)
+      f:close()
+    end
+  end
+end
+
+---@param key string
+---@return any
+function M.get_state(key)
+  local path = state_dir .. "/" .. key .. ".json"
+  local f = io.open(path, "r")
+  if f then
+    local data = f:read("*a")
+    f:close()
+    local ok, result = pcall(vim.json.decode, data)
+    return ok and result or nil
+  end
 end
 
 return M
