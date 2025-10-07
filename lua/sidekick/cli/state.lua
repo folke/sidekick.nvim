@@ -103,6 +103,12 @@ function M.get(filter)
     if a.installed ~= b.installed then
       return a.installed
     end
+    -- sessions in cwd, or tools without a session
+    local a_cwd = (not a.session or a.session.cwd == cwd or false)
+    local b_cwd = (not b.session or b.session.cwd == cwd or false)
+    if a_cwd ~= b_cwd then
+      return a_cwd
+    end
     if a.started ~= b.started then
       return a.started
     end
@@ -111,12 +117,6 @@ function M.get(filter)
     end
     if (a.terminal ~= nil) ~= (b.terminal ~= nil) then
       return a.terminal ~= nil
-    end
-    -- sessions in cwd, or tools without a session
-    local a_cwd = (not a.session or a.session.cwd == cwd or false)
-    local b_cwd = (not b.session or b.session.cwd == cwd or false)
-    if a_cwd ~= b_cwd then
-      return a_cwd
     end
     return a.tool.name < b.tool.name
   end)
