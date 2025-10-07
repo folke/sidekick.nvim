@@ -1,3 +1,5 @@
+---@module 'snacks'
+
 local Config = require("sidekick.config")
 local Context = require("sidekick.cli.context")
 
@@ -24,6 +26,8 @@ function M.select(opts)
   for _, name in ipairs(prompts) do
     local prompt = Config.cli.prompts[name] or {}
     prompt = type(prompt) == "string" and { msg = prompt } or prompt
+    prompt = type(prompt) == "function" and { msg = "[function]" } or prompt
+
     ---@cast prompt sidekick.Prompt
     prompt.msg = prompt.msg or ""
     local text, rendered = context:render({ prompt = name })
