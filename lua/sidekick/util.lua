@@ -154,6 +154,46 @@ function M.exec(cmd, opts)
   return vim.split(result.stdout, "\n", { plain = true, trimempty = true })
 end
 
+---@class sidekick.util.Curl
+---@field method? "GET"|"POST"|"PUT"|"DELETE" HTTP method
+---@field headers? table<string, string> HTTP headers
+---@field data? any Request body
+
+---@param url string
+---@param opts? sidekick.util.Curl
+---@return string? response
+function M.curl(url, opts)
+  opts = opts or {}
+
+  local cmd = { "curl", "-s", "-S" }
+
+  if opts.method then
+    vim.list_extend(cmd, { "-X", opts.method })
+  end
+
+  for key, value in pairs(opts.headers or {}) do
+    vim.list_extend(cmd, { "-H", ("%s: %s"):format(key, value) })
+  end
+
+  -- Handle JSON data
+  if type(opts.data) == "string" then
+    vim.list_extend(cmd, { "-d", opts.data })
+  elseif opts.data ~= nil then
+    local ok, json = pcall(vim.json.encode, opts.data)
+    if not ok then
+      M.error("Failed to encode JSON data")
+      return
+    end
+    vim.list_extend(cmd, { "-H", "Content-Type: application/json" })
+    vim.list_extend(cmd, { "-d", json })
+  end
+
+  table.insert(cmd, url)
+
+  local ret = M.exec(cmd)
+  return ret and table.concat(ret, "\n") or nil
+end
+
 local state_dir = vim.fn.stdpath("state") .. "/sidekick"
 
 ---@param key string
