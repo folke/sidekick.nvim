@@ -99,7 +99,7 @@ function M.format(state, picker)
     ret[#ret + 1] = { string.rep(" ", 12 - len) }
     ret[#ret + 1] = { backend, "Special" }
     len = 12 + sw(backend)
-    ret[#ret + 1] = { string.rep(" ", 22 - len) }
+    ret[#ret + 1] = { string.rep(" ", 40 - len) }
     if picker then
       local item = setmetatable({}, state) --[[@as snacks.picker.Item]]
       item.file = state.session.cwd
