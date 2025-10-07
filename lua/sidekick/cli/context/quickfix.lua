@@ -12,7 +12,7 @@ local TYPE_HL = {
 }
 
 ---@param cwd string
----@param item vim.fn.getqflist.item
+---@param item vim.quickfix.entry
 ---@return sidekick.Text?
 local function format_location(cwd, item)
   local bufnr = item.bufnr and item.bufnr > 0 and vim.api.nvim_buf_is_valid(item.bufnr) and item.bufnr or nil
@@ -58,7 +58,7 @@ end
 ---@param ctx sidekick.context.ctx?
 ---@return sidekick.Text[]|nil
 function M.get(ctx)
-  local info = vim.fn.getqflist({ items = 0, title = 0 })
+  local info = vim.fn.getqflist({ items = 0, title = 0 }) --[[@as {items:vim.quickfix.entry[], title:string}]]
   local items = info.items or {}
   if vim.tbl_isempty(items) then
     return
@@ -89,6 +89,7 @@ function M.get(ctx)
 
     local message = item.text or ""
     message = message:gsub("%s+$", "")
+
     local msg_lines = message ~= "" and TS.get_virtual_lines(message, { ft = "markdown_inline" }) or {}
     ---@type sidekick.Text[]?
     local followups
