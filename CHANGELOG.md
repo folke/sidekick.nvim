@@ -1,5 +1,38 @@
 # Changelog
 
+## [1.3.0](https://github.com/folke/sidekick.nvim/compare/v1.2.0...v1.3.0) (2025-10-08)
+
+
+### Features
+
+* **context:** added quickfix context provider in CLI prompts ([#61](https://github.com/folke/sidekick.nvim/issues/61)) ([6c24d47](https://github.com/folke/sidekick.nvim/commit/6c24d47646ad3191a425bf646c0fe9396805d10a))
+* **context:** added treesitter context `class`, `function`. You can add more in your config. ([8fb70e0](https://github.com/folke/sidekick.nvim/commit/8fb70e025a3dfd144944be7a1fa74b2af0e0f07d))
+* **mux:** default to `tmux`, unless running inside a `zellij` session ([2110966](https://github.com/folke/sidekick.nvim/commit/2110966b5a2b76cb187b9bf80e23dd0b5327c8c7))
+* **session:** attach to running tools in other tmux sessions ([#74](https://github.com/folke/sidekick.nvim/issues/74)) ([1de752c](https://github.com/folke/sidekick.nvim/commit/1de752c7c098e587928b193299c8a259f3499533))
+* **tmux:** notify when starting a cli tool in a new window. ([c3d7572](https://github.com/folke/sidekick.nvim/commit/c3d7572c2dc0bb3d108debda5736c30909133433))
+* **util:** Util.emit ([b0f3762](https://github.com/folke/sidekick.nvim/commit/b0f37629ac424cbde37d97066402506ea14dc1fa))
+
+
+### Bug Fixes
+
+* **cli:** fix insert mode for prompt action. Closes [#50](https://github.com/folke/sidekick.nvim/issues/50) ([8ebbd75](https://github.com/folke/sidekick.nvim/commit/8ebbd7578bcdd345b81ab0d3e6776133d6b0d140))
+* **cli:** open cli window when started. Closes [#78](https://github.com/folke/sidekick.nvim/issues/78) ([b3560df](https://github.com/folke/sidekick.nvim/commit/b3560df49bd0a6d02a404a7a3ec8c57507861a3f))
+* **cli:** properly propagate tool filter for show/toggle/focus. Closes [#57](https://github.com/folke/sidekick.nvim/issues/57) ([bc44db0](https://github.com/folke/sidekick.nvim/commit/bc44db09bbd5bd18551273d9349582b6e0f24bbc))
+* **copilot-cli:** exclude copilot-language-server procs. Closes [#75](https://github.com/folke/sidekick.nvim/issues/75) ([ce85284](https://github.com/folke/sidekick.nvim/commit/ce852849344f3ef0410d2b3f6e5465819603e41f))
+* **mux:** shorter session names. Fixes [#56](https://github.com/folke/sidekick.nvim/issues/56) ([a4e62ce](https://github.com/folke/sidekick.nvim/commit/a4e62cef32b6404bcbe4ef568d8a9d206b3cdaa8))
+* **opencode:** onlny attach to existing opencode sessions on non-windows. Closes [#76](https://github.com/folke/sidekick.nvim/issues/76) ([063457e](https://github.com/folke/sidekick.nvim/commit/063457e154693ed532fb3c440b31066dde4d06b5))
+* **opencode:** set back to system theme, since it is still not working for some ([b2818ec](https://github.com/folke/sidekick.nvim/commit/b2818ec5edffe061ce10ec3ca19c9896e418b32f))
+* **session:** add optional detach() for session backends ([3aa531e](https://github.com/folke/sidekick.nvim/commit/3aa531e449965f5455b203c8356eb2f4e430adee))
+* **session:** added detach ([7e88fa5](https://github.com/folke/sidekick.nvim/commit/7e88fa5672c4288c61548fe43e004dcd25ca4f84))
+* **sessions:** better attached session tracking ([eaa7592](https://github.com/folke/sidekick.nvim/commit/eaa759204325abe4444a431517bb1ab697eadf0e))
+* **state:** metatable to always get latest state through getters ([e0b32f5](https://github.com/folke/sidekick.nvim/commit/e0b32f59f2e03d0d67c0897c344a7d46f5d56e6a))
+* **terminal:** use `exepath()` on windows. See [#53](https://github.com/folke/sidekick.nvim/issues/53) ([c307316](https://github.com/folke/sidekick.nvim/commit/c307316f77d80fbe92bd571c59ce1868703fe411))
+* **terminal:** use shell on windows for jobstart when cmd is not an exe. See [#53](https://github.com/folke/sidekick.nvim/issues/53) ([3f1ccba](https://github.com/folke/sidekick.nvim/commit/3f1ccba5277417388a81598a4b7f08db849f29f7))
+* **test:** treesitter woes in tests ([af931db](https://github.com/folke/sidekick.nvim/commit/af931dbda2efb19777810955c4563a6d0ce3201a))
+* **tmux:** add detach-on-destroy option to tmux sessions ([#67](https://github.com/folke/sidekick.nvim/issues/67)) ([c525b13](https://github.com/folke/sidekick.nvim/commit/c525b1325b801b12f725ab4f2ae07b30676bdf54))
+* **tmux:** set tool env vars. Closes [#62](https://github.com/folke/sidekick.nvim/issues/62) ([e869205](https://github.com/folke/sidekick.nvim/commit/e869205ff05a8defec31175e0f7f8f923e13cde6))
+* **tmux:** use load-buffer instead of set-buffer to prevent issues with non-escaped text ([de62ed1](https://github.com/folke/sidekick.nvim/commit/de62ed1804897028cd3b0467f10d8f41dc8996db))
+
 ## [1.2.0](https://github.com/folke/sidekick.nvim/compare/v1.1.0...v1.2.0) (2025-10-02)
 
 
