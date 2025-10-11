@@ -479,16 +479,17 @@ function M:scrollback()
   vim.bo[buf].bufhidden = "wipe"
   vim.api.nvim_win_set_buf(self.win, buf)
   local term = vim.api.nvim_open_term(buf, {})
-  vim.api.nvim_create_autocmd({ "TermEnter" }, {
-    buffer = buf,
-    callback = function()
-      vim.api.nvim_win_set_buf(self.win, self.buf)
-      self:wo()
-      if vim.api.nvim_buf_is_valid(buf) then
-        pcall(vim.api.nvim_buf_delete, buf, { force = true })
-      end
-    end,
-  })
+  local function exit_scrollback()
+    vim.api.nvim_win_set_buf(self.win, self.buf)
+    self:wo()
+    if vim.api.nvim_buf_is_valid(buf) then
+      pcall(vim.api.nvim_buf_delete, buf, { force = true })
+    end
+  end
+  for _, key in ipairs({ "i", "a", "I", "A" }) do
+    vim.keymap.set("n", key, exit_scrollback, { silent = true, buffer = buf })
+  end
+  vim.api.nvim_create_autocmd({ "TermEnter" }, { buffer = buf, callback = exit_scrollback })
   vim.api.nvim_create_autocmd({ "TextChangedT", "TextChanged" }, {
     buffer = buf,
     callback = function()
