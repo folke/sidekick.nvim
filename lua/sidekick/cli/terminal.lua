@@ -285,21 +285,16 @@ function M:open_win()
     vim.deepcopy(is_float and self.opts.float or self.opts.split)
   )
 
-  if opts.width == 0 then
-    opts.width = nil
-  else
-    opts.width = opts.width <= 1 and math.floor(vim.o.columns * opts.width) or opts.width
-  end
-  if opts.height == 0 then
-    opts.height = nil
-  else
-    opts.height = opts.height <= 1 and math.floor(vim.o.lines * opts.height) or opts.height
-  end
+  opts.width = opts.width <= 1 and math.floor(vim.o.columns * opts.width) or opts.width
+  opts.height = opts.height <= 1 and math.floor(vim.o.lines * opts.height) or opts.height
 
   if is_float then
-    opts.row = opts.row <= 1 and math.floor((vim.o.lines - (opts.height or 0)) * opts.row) or opts.row
-    opts.col = opts.col <= 1 and math.floor((vim.o.columns - (opts.width or 0)) * opts.col) or opts.col
+    opts.width, opts.height = math.max(opts.width, 80), math.max(opts.height, 10) -- minimum size
+    opts.row = opts.row <= 1 and math.floor((vim.o.lines - opts.height) * opts.row) or opts.row
+    opts.col = opts.col <= 1 and math.floor((vim.o.columns - opts.width) * opts.col) or opts.col
   else
+    opts.width = opts.width > 0 and opts.width or nil -- auto split width
+    opts.height = opts.height > 0 and opts.height or nil -- auto split height
     opts.vertical = self.opts.layout == "top" or self.opts.layout == "bottom"
     opts.split = ({ top = "above", left = "left", bottom = "below", right = "right" })[self.opts.layout] or "right"
   end
