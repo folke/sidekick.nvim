@@ -285,8 +285,16 @@ function M:open_win()
     vim.deepcopy(is_float and self.opts.float or self.opts.split)
   )
 
-  opts.width = opts.width <= 1 and math.floor(vim.o.columns * opts.width) or opts.width
-  opts.height = opts.height <= 1 and math.floor(vim.o.lines * opts.height) or opts.height
+  if opts.width == 0 then
+    opts.width = nil
+  else
+    opts.width = opts.width <= 1 and math.floor(vim.o.columns * opts.width) or opts.width
+  end
+  if opts.height == 0 then
+    opts.height = nil
+  else
+    opts.height = opts.height <= 1 and math.floor(vim.o.lines * opts.height) or opts.height
+  end
 
   if is_float then
     opts.row = opts.row <= 1 and math.floor((vim.o.lines - (opts.height or 0)) * opts.row) or opts.row
