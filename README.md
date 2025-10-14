@@ -937,8 +937,8 @@ Then use with `<leader>ap` or `:Sidekick cli prompt`.
 
 ## Contributing
 
-You can run the test suite with
+You can run the test suite by running the `test` script:
 
-```lua
-nvim --headless -c "PlenaryBustedDirectory tests/ {minimal_init = 'tests/minimal_init.lua'}"
+```
+./scripts/test
 ```
