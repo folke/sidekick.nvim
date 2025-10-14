@@ -13,7 +13,7 @@ local PANE_FORMAT =
 ---@return sidekick.cli.terminal.Cmd?
 function M:attach()
   if self.sid == self.mux_session then
-    return { cmd = { self:binary(), "attach-session", "-t", self.sid } }
+    return { cmd = { M.binary(), "attach-session", "-t", self.sid } }
   end
 end
 
@@ -30,19 +30,19 @@ end
 ---@return sidekick.cli.terminal.Cmd?
 function M:start()
   if not self.external then
-    local cmd = { self:binary(), "new", "-A", "-s", self.id }
+    local cmd = { M.binary(), "new", "-A", "-s", self.id }
     vim.list_extend(cmd, { "-c", self.cwd })
     self:add_cmd(cmd)
     vim.list_extend(cmd, { ";", "set-option", "status", "off" })
     vim.list_extend(cmd, { ";", "set-option", "detach-on-destroy", "on" })
     return { cmd = cmd }
   elseif Config.cli.mux.create == "window" then
-    local cmd = { self:binary(), "new-window", "-dP", "-c", self.cwd, "-F", PANE_FORMAT }
+    local cmd = { M.binary(), "new-window", "-dP", "-c", self.cwd, "-F", PANE_FORMAT }
     self:add_cmd(cmd)
     self:spawn(cmd)
     Util.info(("Started **%s** in a new tmux window"):format(self.tool.name))
   elseif Config.cli.mux.create == "split" then
-    local cmd = { self:binary(), "split-window", "-dP", "-c", self.cwd, "-F", PANE_FORMAT }
+    local cmd = { M.binary(), "split-window", "-dP", "-c", self.cwd, "-F", PANE_FORMAT }
     cmd[#cmd + 1] = Config.cli.mux.split.vertical and "-h" or "-v"
     local size = Config.cli.mux.split.size
     vim.list_extend(cmd, { "-l", tostring(size <= 1 and ((size * 100) .. "%") or size) })
@@ -86,7 +86,7 @@ end
 function M.panes(opts)
   opts = opts or {}
   -- List all panes in current session with their command and cwd
-  local cmd = opts.cmd or { self:binary(), "list-panes", "-a", "-F", PANE_FORMAT }
+  local cmd = opts.cmd or { M.binary(), "list-panes", "-a", "-F", PANE_FORMAT }
   local lines = Util.exec(cmd, { notify = opts.notify == true })
   local panes = {} ---@type sidekick.tmux.Pane[]
   for _, line in ipairs(lines or {}) do
@@ -108,7 +108,7 @@ function M.panes(opts)
 end
 
 function M.clients()
-  local lines = Util.exec({ self:binary(), "list-clients", "-F", "#{session_id}:#{client_pid}" }, { notify = false })
+  local lines = Util.exec({ M.binary(), "list-clients", "-F", "#{session_id}:#{client_pid}" }, { notify = false })
   local ret = {} ---@type table<string, integer>[]
   for _, line in ipairs(lines or {}) do
     local session_id, pid = line:match("^(%$%d+):(%d+)$")
@@ -160,7 +160,7 @@ function M:pane_id()
   end
   if not self.external then
     self:spawn({
-      self:binary(),
+      M.binary(),
       "list-panes",
       "-s",
       "-F",
@@ -176,9 +176,9 @@ end
 function M:send(text)
   local function send()
     local buffer = "sidekick-" .. self.tmux_pane_id
-    Util.exec({ self:binary(), "load-buffer", "-b", buffer, "-" }, { stdin = text })
+    Util.exec({ M.binary(), "load-buffer", "-b", buffer, "-" }, { stdin = text })
     Util.exec({
-      self:binary(),
+      M.binary(),
       "paste-buffer",
       "-b",
       buffer,
@@ -192,7 +192,7 @@ function M:send(text)
   if self.tool.mux_focus then
     -- Send focus-in event first (some TUI apps like qwen ignore input when unfocused)
     Util.exec({
-      self:binary(),
+      M.binary(),
       "send-keys",
       "-t",
       self.tmux_pane_id,
@@ -208,7 +208,7 @@ end
 
 ---Send text to a tmux pane
 function M:submit()
-  Util.exec({ self:binary(), "send-keys", "-t", self.tmux_pane_id, "Enter" })
+  Util.exec({ M.binary(), "send-keys", "-t", self.tmux_pane_id, "Enter" })
 end
 
 function M:dump()
@@ -217,7 +217,7 @@ function M:dump()
     return
   end
   local _, ret = Util.exec({
-    self:binary(),
+    M.binary(),
     "capture-pane",
     "-p",
     "-t",
@@ -231,7 +231,7 @@ function M:dump()
   return ret
 end
 
-function M:binary()
+function M.binary()
   return Config.cli.mux.binary or "tmux"
 end
 
