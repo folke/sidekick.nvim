@@ -318,6 +318,7 @@ local defaults = {
     ---@class sidekick.cli.Mux
     ---@field backend? "tmux"|"zellij" Multiplexer backend to persist CLI sessions
     mux = {
+      binary = nil, -- string|nil: The path to the binary program for the mux, e.g. "tmux" or "tmate" or "zellij"
       backend = vim.env.ZELLIJ and "zellij" or "tmux", -- default to tmux unless zellij is detected
       enabled = false,
       -- terminal: new sessions will be created for each CLI tool and shown in a Neovim terminal
@@ -934,6 +935,37 @@ opts = {
 ```
 
 Then use with `<leader>ap` or `:Sidekick cli prompt`.
+
+### How do I use this with tmate?
+
+Tmate uses an older version of tmux and therefore needs some special handling.
+
+Currently nesting tmate sessions does not work well and will issue a warning
+that will prevent it from successfully using the `terminal`. But you can get
+around this by using a window split instead:
+
+```lua
+opts = {
+  cli = {
+    mux = {
+      binary = vim.env.TMATE_SESSION and "tmate" or "tmux",
+      backend = "tmux",
+      enabled = true,
+      create = "split",
+      split = {
+        size = 100
+      }
+    },
+  },
+}
+```
+
+You will also want to add a `TMATE_SESSION` env variable to your `tmate.conf` if
+you want to set the binary conditionally like in the above example.
+
+```conf
+set-environment -g TMATE_SESSION "true"
+```
 
 ## Contributing
 
