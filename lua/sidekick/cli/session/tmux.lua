@@ -42,7 +42,15 @@ function M:start()
     self:spawn(cmd)
     Util.info(("Started **%s** in a new tmux window"):format(self.tool.name))
   elseif Config.cli.mux.create == "split" then
-    local cmd = { M.binary(), "split-window", "-dP", "-c", self.cwd, "-F", PANE_FORMAT }
+    local cmd = {
+      M.binary(),
+      "split-window",
+      "-dP",
+      "-c",
+      self.cwd,
+      "-F",
+      PANE_FORMAT,
+    }
     cmd[#cmd + 1] = Config.cli.mux.split.vertical and "-h" or "-v"
     local size = Config.cli.mux.split.size
     vim.list_extend(cmd, { "-l", tostring(size <= 1 and ((size * 100) .. "%") or size) })
@@ -231,6 +239,7 @@ function M:dump()
   return ret
 end
 
+---@return string
 function M.binary()
   return Config.cli.mux.binary or "tmux"
 end

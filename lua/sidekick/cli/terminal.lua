@@ -250,6 +250,7 @@ function M:start()
         env[k] = nil
       end
     end
+
     self.job = vim.fn.jobstart(norm_cmd, {
       cwd = self.cwd,
       term = true,
