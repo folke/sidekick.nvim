@@ -934,3 +934,11 @@ opts = {
 ```
 
 Then use with `<leader>ap` or `:Sidekick cli prompt`.
+
+## Contributing
+
+You can run the test suite with
+
+```lua
+nvim --headless -c "PlenaryBustedDirectory tests/ {minimal_init = 'tests/minimal_init.lua'}"
+```
