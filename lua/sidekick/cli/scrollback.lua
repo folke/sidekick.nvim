@@ -128,7 +128,11 @@ function M:update(opts)
   local mode = opts.mode or vim.fn.mode()
   local is_open = self:is_open()
   if mode == "t" and (self:is_focused() or self:in_terminal()) and is_open then
-    self:close()
+    vim.cmd.stopinsert()
+    vim.schedule(function()
+      self:close()
+      vim.cmd.startinsert()
+    end)
   elseif mode ~= "t" and not is_open then
     self:open(opts.win_pos)
   end
