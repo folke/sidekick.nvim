@@ -45,6 +45,7 @@ function M.get(ctx, opts)
     end
   end
 
+  add(" ")
   add("@")
   ret[#ret + 1] = { name, "SidekickLocFile" }
 
@@ -64,6 +65,7 @@ function M.get(ctx, opts)
       add(":", "L", from[1], ":", "C", from[2] + 1)
     end
   end
+  add(" ")
 
   return { ret }
 end
