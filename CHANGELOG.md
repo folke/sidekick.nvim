@@ -1,5 +1,84 @@
 # Changelog
 
+## [2.0.0](https://github.com/folke/sidekick.nvim/compare/v1.3.0...v2.0.0) (2025-10-17)
+
+
+### ⚠ BREAKING CHANGES
+
+* **config:** changed the default keymaps. Please check the updated documentation and example mappings
+
+### Features
+
+* **cli.claude:** transform line ranges to a format Claude can understand. Closes [#59](https://github.com/folke/sidekick.nvim/issues/59) ([4a492da](https://github.com/folke/sidekick.nvim/commit/4a492da6e863d06b15e887be97dd43c50b76f11d))
+* **cli.select:** better distinction between attaching to terminal/external ([48d0bf6](https://github.com/folke/sidekick.nvim/commit/48d0bf66459f2fab8d917fea961bbe95c5d829c1))
+* **cli:** `close()` on an external session, now detaches from that session. Closes [#98](https://github.com/folke/sidekick.nvim/issues/98) ([d2e6c64](https://github.com/folke/sidekick.nvim/commit/d2e6c6447e750a5f565ae1a832f1ca7fd8e6e8dd))
+* **cli:** added `<c-q>` to hide in normal mode, so from terminal double `<c-q>` will hide ([358804c](https://github.com/folke/sidekick.nvim/commit/358804c71cd988b1ce7efc7a91e3d265df530a83))
+* **cli:** added health checks and optional reqs to the docs for `lsof` and `ps`. Fixes [#89](https://github.com/folke/sidekick.nvim/issues/89) ([d403ec3](https://github.com/folke/sidekick.nvim/commit/d403ec3e695e17859e03aa0e6b4fe865140f7155))
+* **cli:** added some config option validation ([c236b38](https://github.com/folke/sidekick.nvim/commit/c236b389819a3a11ada7234cd2a7a1be358b0785))
+* **cli:** added terminal navigation with `<c-hjkl>`. Only mapped when not a float and a window in the dir exists. See [#51](https://github.com/folke/sidekick.nvim/issues/51) ([b48e177](https://github.com/folke/sidekick.nvim/commit/b48e177b20aeb422d3ea6838d8f2ca985ee6a21a))
+* **cli:** deduplicate cli tool sessions. Closes [#92](https://github.com/folke/sidekick.nvim/issues/92) ([e5bcf17](https://github.com/folke/sidekick.nvim/commit/e5bcf171b13a99e53a8ac6b584baebf7c435584a))
+* **cli:** handle special filenames for Claude, Gemini, Qwen. Fixes [#130](https://github.com/folke/sidekick.nvim/issues/130) ([19b5985](https://github.com/folke/sidekick.nvim/commit/19b59854782837430ae297ed4690660b7aa254d5))
+* **config:** changed the default keymaps. Please check the updated documentation and example mappings ([6608705](https://github.com/folke/sidekick.nvim/commit/6608705fc6bd949efafbdeca879c63a5f933730c))
+* **context:** you can now use context fallbacks like `{function|line}` ([076147a](https://github.com/folke/sidekick.nvim/commit/076147a6046836955712dcfc2702fc02c66684c9))
+* **copilot:** allow configuring minimum level for copilot LSP messages ([4b6750b](https://github.com/folke/sidekick.nvim/commit/4b6750bb5218c0d8be2f006e41894a1655b1dd27))
+* **opencode:** add pid to external opencode sessions ([3d9d519](https://github.com/folke/sidekick.nvim/commit/3d9d519c90a2a071f56067a750840e6113359480))
+* **terminal:** much better scrollback buffer. no flickering and should work in all modes ([3aa2fe5](https://github.com/folke/sidekick.nvim/commit/3aa2fe5d54f084cbfae591623f50cb8833a17f76))
+* **terminal:** restore normal/terminal mode when entering the sidekick window ([50c40d5](https://github.com/folke/sidekick.nvim/commit/50c40d52bf9e9f6aad0c0071fd44cc283ababf92))
+* **terminal:** switch to scrollback when doing mouse scroll ([0dd3c3b](https://github.com/folke/sidekick.nvim/commit/0dd3c3bc4547b840f00fb2857e501d1efb254bf5))
+* **tmux:** entering normal mode in a tmux terminal, now loads the whole tmux scrollback ([a453f76](https://github.com/folke/sidekick.nvim/commit/a453f76615bb49a1fbd25151a2229708a5187939))
+* **tmux:** some tools won't process input if they don't have focus, so tools can now set `mux_focus = true` ([41dec4d](https://github.com/folke/sidekick.nvim/commit/41dec4dcdf0c8fe17f5f2e9eeced4645a88afb0d))
+* **tool:** tools can now further format text before it's sent. See [#130](https://github.com/folke/sidekick.nvim/issues/130), see [#59](https://github.com/folke/sidekick.nvim/issues/59) ([28f8a07](https://github.com/folke/sidekick.nvim/commit/28f8a07a236dd0dea60942b3996465ddd29b770d))
+* **util:** weak ref util method ([8036aea](https://github.com/folke/sidekick.nvim/commit/8036aeac392666e1b39d6c664f1741e813f74d49))
+
+
+### Bug Fixes
+
+* **cli.prompt:** proper way of rendering templates with highlights ([30b7b9e](https://github.com/folke/sidekick.nvim/commit/30b7b9ef72a1d78fbabf5484f4dc33adc3abb7d1))
+* **cli.select:** sort terminal sessions before external sessions ([c487d53](https://github.com/folke/sidekick.nvim/commit/c487d532ed9245ddaaba0ef233e1a36565a38c78))
+* **cli.state:** allow creating new sessions for tools that have only external sessions ([c588efb](https://github.com/folke/sidekick.nvim/commit/c588efbba7651446aaf767c1c7455804b30ad0e8))
+* **cli:** allow sending a newlline `msg="\n"` ([fc0067a](https://github.com/folke/sidekick.nvim/commit/fc0067a2ee8c40188744e67c55d8e6c0b92fc8a4))
+* **cli:** don't send empty messages ([63f626c](https://github.com/folke/sidekick.nvim/commit/63f626cd4490d61852009ea306dfb12845a412c3))
+* **location:** different format that should work for most cli tools. Closes [#59](https://github.com/folke/sidekick.nvim/issues/59) ([d570e1f](https://github.com/folke/sidekick.nvim/commit/d570e1f83bf2a19e6c1fad5de9b1b07beb54b67d))
+* **nes:** added triggerKind. Maybe that's needed for nes? ([e535808](https://github.com/folke/sidekick.nvim/commit/e5358082b1c58608d3ed1260f7c4f9841b632ae6))
+* **nes:** better didFocus tracking ([3669eae](https://github.com/folke/sidekick.nvim/commit/3669eae4354f9fdd479ff285877f610bb95dfdd5))
+* **nes:** don't clear NES on `TextChanged` or `BufWritePre`. Closes [#91](https://github.com/folke/sidekick.nvim/issues/91) ([32fa55c](https://github.com/folke/sidekick.nvim/commit/32fa55c1ad2d391b577f3c667364284937b5cb0c))
+* **nes:** don't process unloaded buffers. Closes [#86](https://github.com/folke/sidekick.nvim/issues/86) ([620adf0](https://github.com/folke/sidekick.nvim/commit/620adf034a21e08ac569523cc478caf375eaa24c))
+* **nes:** exec nes commands AFTER edits have been applied ([80d1604](https://github.com/folke/sidekick.nvim/commit/80d1604f7081cb6f72f6985af133dced8db5c5a8))
+* **nes:** skip old edits early ([8395007](https://github.com/folke/sidekick.nvim/commit/839500723b578984ed6e4975b3302c8267784e81))
+* **nes:** textDocument/didFocus ([b7085d7](https://github.com/folke/sidekick.nvim/commit/b7085d79df9efb9f8be5ca4a65d771b163d7d34c))
+* **nes:** trigger on `ModeChanged *:n` instead of `InsertLeave`. See [#125](https://github.com/folke/sidekick.nvim/issues/125) ([abbd051](https://github.com/folke/sidekick.nvim/commit/abbd05132d88e2966016e40d2184bcc930ccbc48))
+* **opencode:** check that open server is actually from an opencode process. Closes [#87](https://github.com/folke/sidekick.nvim/issues/87) ([cb8485a](https://github.com/folke/sidekick.nvim/commit/cb8485afa3be2221f06c66abcebff053572c2644))
+* **procs:** handle case where `USER` is not set. Closes [#82](https://github.com/folke/sidekick.nvim/issues/82) ([01f89b7](https://github.com/folke/sidekick.nvim/commit/01f89b748349982906c65de3685a9fb7444c8748))
+* **q:** filer procs on qchat instead of `q`, which seems to be the actual binary. Closes [#80](https://github.com/folke/sidekick.nvim/issues/80) ([4b65b8a](https://github.com/folke/sidekick.nvim/commit/4b65b8ad7e5e7e91e3db24a9061c6eb561fe2fd4))
+* **qwen:** set `mux_focus = true` since qwen doesnt process input if unfocused. Fixes [#104](https://github.com/folke/sidekick.nvim/issues/104) ([c262b25](https://github.com/folke/sidekick.nvim/commit/c262b25be46de67b96ca38c005a97d7091025818))
+* **sessions:** load tools during session setup, since thet may register session backends (like opencode) ([c7761eb](https://github.com/folke/sidekick.nvim/commit/c7761eb382af14e220933ad50cf23c559dfb3815))
+* **status:** always return `nil` when copilot status is disabled in config ([f908fec](https://github.com/folke/sidekick.nvim/commit/f908fec933fe3e5ad3c31fb3ed7fb48fee232a44))
+* **terminal:** allow auto split width/height ([#111](https://github.com/folke/sidekick.nvim/issues/111)) ([03cf9fb](https://github.com/folke/sidekick.nvim/commit/03cf9fbe5fe23d4aeea981d62790ef54e307017e))
+* **terminal:** better handling of crlf for send. See [#119](https://github.com/folke/sidekick.nvim/issues/119) ([7185e08](https://github.com/folke/sidekick.nvim/commit/7185e0863ba9f533b39d699243ee65c2f16062af))
+* **terminal:** blur on hide ([81b2a85](https://github.com/folke/sidekick.nvim/commit/81b2a85543c5fd7fd19ce29169c99665e672c666))
+* **terminal:** cleanup scrollback buffer ([9ef38db](https://github.com/folke/sidekick.nvim/commit/9ef38db6ea49fe04e2d237027e60cb96fe66af44))
+* **terminal:** don't error when it's the last window and hiding. Closes [#124](https://github.com/folke/sidekick.nvim/issues/124) ([cab3ec4](https://github.com/folke/sidekick.nvim/commit/cab3ec49b751ad8aa3e1c743380accfe8f0798e8))
+* **terminal:** keymap rhs fallback to rhs string ([2b644f0](https://github.com/folke/sidekick.nvim/commit/2b644f007ff59e9407ca8a12a400bcd896c1b096))
+* **terminal:** no need to check for mouse scroll when we're not in terminal mode ([b52c3be](https://github.com/folke/sidekick.nvim/commit/b52c3beb608ae21079ac3800925e11a972cb76d9))
+* **terminal:** only show scrollback when entering normal mode and the terminal window is current. Closes [#106](https://github.com/folke/sidekick.nvim/issues/106) ([1e03666](https://github.com/folke/sidekick.nvim/commit/1e036668600fc339fb69b406bab7227fdec668a2))
+* **terminal:** remove padding since it causes issues with terminal reflow (Neovim bug) ([cc32068](https://github.com/folke/sidekick.nvim/commit/cc320688ed6015508f7b72a2770581e47ad972f6))
+* **terminal:** safer way of entering terminal mode from scrollback buffer ([#129](https://github.com/folke/sidekick.nvim/issues/129)) ([2195213](https://github.com/folke/sidekick.nvim/commit/2195213ba29be1a5178e502076c1102958bd7283))
+* **terminal:** safer way of entering terminal mode from scrollback buffer. Closes [#103](https://github.com/folke/sidekick.nvim/issues/103) ([0bc6f88](https://github.com/folke/sidekick.nvim/commit/0bc6f884ae4d807f5414b70d51a34fb813f588f9))
+* **terminal:** scroll to last line in normal mode. Closes [#101](https://github.com/folke/sidekick.nvim/issues/101) ([69eb7b7](https://github.com/folke/sidekick.nvim/commit/69eb7b736798af9d382f1fc67df88e0450cf1529))
+* **terminal:** send all text in one chunk with nvim_paste. Fixes [#119](https://github.com/folke/sidekick.nvim/issues/119). Fixes [#118](https://github.com/folke/sidekick.nvim/issues/118) ([ca97ecd](https://github.com/folke/sidekick.nvim/commit/ca97ecd0cface9913f942e3424aca767c6720445))
+* **terminal:** use `nvim_paste` instead of `nvim_chan_send` to better simulate user input. Closes [#110](https://github.com/folke/sidekick.nvim/issues/110) ([cebcd44](https://github.com/folke/sidekick.nvim/commit/cebcd4415dc73e3713162e4ea317a6e91312f1a8))
+* **terminal:** use nvim_put directly to paste into the terminal ([bed1d65](https://github.com/folke/sidekick.nvim/commit/bed1d65385e33bb0eae3fa4163b97606f2e4d8dc))
+* **text:** handle empty virtual lines ([98a33eb](https://github.com/folke/sidekick.nvim/commit/98a33eb8c3550d4755570a2372e8cc573044711b))
+* **tmux:** use `paste-buffer` with the `-r` flag to preserve newlines. Fixes [#93](https://github.com/folke/sidekick.nvim/issues/93) ([2fdc4d4](https://github.com/folke/sidekick.nvim/commit/2fdc4d482326035d9c5fe03f32ebeef84b63142c))
+* **zellij:** attach to existing isolated session ([9deb771](https://github.com/folke/sidekick.nvim/commit/9deb7716ca1a60fa0644cbee10681ac9772f2c38))
+* **zellij:** zellij:create -&gt; zellij:start ([4bd0df2](https://github.com/folke/sidekick.nvim/commit/4bd0df2694464b5fbe13a224bb5409f97e0af860))
+
+
+### Performance Improvements
+
+* **nes:** only send didFocus events for regular buffers and if different ([39a1638](https://github.com/folke/sidekick.nvim/commit/39a16381ef711a4e6ac6f95f4ba1297365889fef))
+* **terminal:** only load scrollback buffer when needed ([628c3d0](https://github.com/folke/sidekick.nvim/commit/628c3d001e8697debdbd36dfed6441e7fe6fffc5))
+
 ## [1.3.0](https://github.com/folke/sidekick.nvim/compare/v1.2.0...v1.3.0) (2025-10-08)
 
 
