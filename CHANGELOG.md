@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.1.0](https://github.com/folke/sidekick.nvim/compare/v2.0.0...v2.1.0) (2025-10-18)
+
+
+### Features
+
+* **cli:** added snacks picker action to send files with sidekick. Closes [#134](https://github.com/folke/sidekick.nvim/issues/134) ([96b84ff](https://github.com/folke/sidekick.nvim/commit/96b84ff4fca047dd561219e92060c5a16d4a6e20))
+
+
+### Bug Fixes
+
+* **cli:** use filter options for send. Closes [#138](https://github.com/folke/sidekick.nvim/issues/138) ([d0ee1ef](https://github.com/folke/sidekick.nvim/commit/d0ee1ef6a8257d8b66be66a5797ae6451385ea0b))
+
 ## [2.0.0](https://github.com/folke/sidekick.nvim/compare/v1.3.0...v2.0.0) (2025-10-17)
 
 
