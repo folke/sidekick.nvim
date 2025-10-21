@@ -33,8 +33,10 @@ function M.new(client, edit)
   local fname = vim.uri_to_fname(edit.textDocument.uri)
   self.buf = vim.fn.bufnr(fname, false)
 
-  self.from, self.to = pos(client, self.buf, self.range.start), pos(client, self.buf, self.range["end"])
-  self.to = Util.fix_pos(self.buf, self.to)
+  if self.buf ~= -1 and vim.api.nvim_buf_is_valid(self.buf) then
+    self.from, self.to = pos(client, self.buf, self.range.start), pos(client, self.buf, self.range["end"])
+    self.to = Util.fix_pos(self.buf, self.to)
+  end
   return self
 end
 
