@@ -1,5 +1,37 @@
 # Changelog
 
+## [2.1.0](https://github.com/folke/sidekick.nvim/compare/v2.0.0...v2.1.0) (2025-10-23)
+
+
+### Features
+
+* **cli:** added snacks picker action to send files with sidekick. Closes [#134](https://github.com/folke/sidekick.nvim/issues/134) ([96b84ff](https://github.com/folke/sidekick.nvim/commit/96b84ff4fca047dd561219e92060c5a16d4a6e20))
+* **cli:** added snacks/telescope/fzf-lua pickers for selecting files/buffers to send ([0da0e16](https://github.com/folke/sidekick.nvim/commit/0da0e16089d62b882d2a7b2d8c9809a6185bf644))
+* **cli:** added terminal keymaps `<c-f>` to select files and `<c-b>` to select buffers to send. ([c827ad2](https://github.com/folke/sidekick.nvim/commit/c827ad2826bd7fe444cddae8474e0bfe05ad3d93))
+* **diagnostics:** diagnostics will now use the visual selection if needed. Closes [#146](https://github.com/folke/sidekick.nvim/issues/146) ([fb0cbaa](https://github.com/folke/sidekick.nvim/commit/fb0cbaa700006edc3318a026a14adb03f41d99a5))
+* **snacks:** make `vim.ui.select` snacks options configurable. Closes [#149](https://github.com/folke/sidekick.nvim/issues/149) ([7568825](https://github.com/folke/sidekick.nvim/commit/756882545e4fcb50185e3089ee77a67706951139))
+* **status:** added cli status to be used in statuslines. Closes [#143](https://github.com/folke/sidekick.nvim/issues/143) ([e291b6b](https://github.com/folke/sidekick.nvim/commit/e291b6b3cc66abf04c120e50a502e18323dfedd2))
+* **terminal:** smarter way to determine that the cli tool is ready to accept input. Closes [#150](https://github.com/folke/sidekick.nvim/issues/150) ([04265f7](https://github.com/folke/sidekick.nvim/commit/04265f7c1419bfcbb3b98b6d99bd3f5bd9cebd9b))
+
+
+### Bug Fixes
+
+* **cli.loc:** allow row/col to be `nil` ([bb87f41](https://github.com/folke/sidekick.nvim/commit/bb87f419dd56a7fabe0de017e18ace243a2d7aee))
+* **cli.picker:** do the stop/start insert dance to keep pickers / terminals happy ([9941a1c](https://github.com/folke/sidekick.nvim/commit/9941a1cf4eb7ca1cb9c155207a4249ff45e6123d))
+* **cli.status:** schedule detach event to prevent loop. Closes [#144](https://github.com/folke/sidekick.nvim/issues/144) ([9390cb7](https://github.com/folke/sidekick.nvim/commit/9390cb72de62e6ae27dbd98dfda32059662290f1))
+* **cli:** use filter options for send. Closes [#138](https://github.com/folke/sidekick.nvim/issues/138) ([d0ee1ef](https://github.com/folke/sidekick.nvim/commit/d0ee1ef6a8257d8b66be66a5797ae6451385ea0b))
+* **nes.edit:** add buffer validation before accessing position ([#147](https://github.com/folke/sidekick.nvim/issues/147)) ([2cb7359](https://github.com/folke/sidekick.nvim/commit/2cb7359b0908f52dd07ee8200f904ccf975f7679))
+* **nes:** ModeChanged: *:n -&gt; i:n, so only when leaving insert to normal mode. Closes [#151](https://github.com/folke/sidekick.nvim/issues/151) ([9e29145](https://github.com/folke/sidekick.nvim/commit/9e29145965b138d65f3d071663b1313f881d3d39))
+* **opencode:** opencode implements scrolling natively, so don't use scrollback there. See [#152](https://github.com/folke/sidekick.nvim/issues/152) ([d9e1fa2](https://github.com/folke/sidekick.nvim/commit/d9e1fa2124340d3337d1a3a22b2f20de0701affe))
+* **scrollback:** focus issues with other terminals entering/leaving like fzf-lua ([ff55eb3](https://github.com/folke/sidekick.nvim/commit/ff55eb3015d2b4250886d09bea777219179ab61b))
+* **status:** show correct signin command when lsp is from `copilot.lua` ([09ebeb4](https://github.com/folke/sidekick.nvim/commit/09ebeb40d964a64b78743c1a051c557a038e7c17))
+* **terminal:** better tracking of terminal mode when entering/leaving the sidekick window ([22a6326](https://github.com/folke/sidekick.nvim/commit/22a632665774961a8039eb5f5ff02835728f26d2))
+* **terminal:** enbable/disable cursorline when in normal/terminal mode in the sidekick window ([83b6815](https://github.com/folke/sidekick.nvim/commit/83b6815c0ed738576f101aad31c79b885c892e0f))
+* **terminal:** fckup with scrollback ([cbbf53b](https://github.com/folke/sidekick.nvim/commit/cbbf53b7ecad1cdf3a3daa5a22506b9349696e45))
+* **terminal:** handle closing the last window. Closes [#124](https://github.com/folke/sidekick.nvim/issues/124) ([99824c2](https://github.com/folke/sidekick.nvim/commit/99824c2b63d547a1fd90e24fa9e8fb648382645d))
+* **terminal:** increase initial send delay when opening the terminal. Closes [#150](https://github.com/folke/sidekick.nvim/issues/150) ([e98008f](https://github.com/folke/sidekick.nvim/commit/e98008f9dcb504b745e465169196e1e1b26028da))
+* **terminal:** only use scrollback buffer when needed ([9d9d8cc](https://github.com/folke/sidekick.nvim/commit/9d9d8cca622d12d81c58cd10b51a428e2fc2cdd7))
+
 ## [2.0.0](https://github.com/folke/sidekick.nvim/compare/v1.3.0...v2.0.0) (2025-10-17)
 
 
