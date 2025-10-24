@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.0](https://github.com/folke/sidekick.nvim/compare/v2.1.0...v2.2.0) (2025-10-24)
+
+
+### Features
+
+* **terminal:** add files/buffers inline with spaces from picker. Closes [#133](https://github.com/folke/sidekick.nvim/issues/133) ([e743ac7](https://github.com/folke/sidekick.nvim/commit/e743ac74b90826d0b3a33f44c9906baa306e46b9))
+
 ## [2.1.0](https://github.com/folke/sidekick.nvim/compare/v2.0.0...v2.1.0) (2025-10-23)
 
 
