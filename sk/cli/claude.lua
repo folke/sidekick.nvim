@@ -14,8 +14,14 @@ return {
 
     local ret = Text.to_string(text)
 
-    -- transform line ranges to a format that Claude understands
-    ret = ret:gsub("@([^@]-) :L(%d+)%-L(%d+)", "@%1#L%2-%3")
+  -- transform line ranges to a format that Claude understands
+  ret = ret:gsub("@([^@]-) :L(%d+)%-L(%d+)", "@%1#L%2-%3")
+
+  -- single line (and line+column) locations should also use `#L...` instead
+  -- of the default ` :L...` formatting produced by the location helper.
+  -- handle line+column first, then plain line to avoid double-replacing.
+  ret = ret:gsub("@([^@]-) :L(%d+):C(%d+)", "@%1#L%2:C%3")
+  ret = ret:gsub("@([^@]-) :L(%d+)", "@%1#L%2")
 
     return ret
   end,
