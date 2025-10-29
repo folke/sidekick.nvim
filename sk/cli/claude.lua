@@ -16,7 +16,7 @@ return {
 
     -- transform line ranges to a format that Claude understands
     ret = ret:gsub("@([^@]-) :L(%d+)%-L(%d+)", "@%1#L%2-%3")
-    ret = ret:gsub("@([^@]-) :L(%d+):C(%d+)", "@%1#L%2:C%3")
+    ret = ret:gsub("@([^@]-) :L(%d+):C(%d+)", "@%1#L%2")
     ret = ret:gsub("@([^@]-) :L(%d+)", "@%1#L%2")
 
     return ret
