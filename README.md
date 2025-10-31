@@ -727,7 +727,7 @@ Sidekick preconfigures popular AI CLIs. Run `:checkhealth sidekick` to see which
 | [`amazon_q`](https://github.com/aws/amazon-q-developer-cli) | Amazon Q Developer   | [Install guide](https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/command-line-getting-started-installing.html) |
 | [`claude`](https://github.com/anthropics/claude-code)       | Claude Code CLI      | `npm install -g @anthropic-ai/claude-code`                                                                             |
 | [`codex`](https://github.com/openai/codex)                  | OpenAI Codex CLI     | See [OpenAI docs](https://github.com/openai/codex)                                                                     |
-| [`copilot`](https://github.com/github/copilot-cli)          | GitHub Copilot CLI   | `npm install -g @githubnext/github-copilot-cli`                                                                        |
+| [`copilot`](https://github.com/github/copilot-cli)          | GitHub Copilot CLI   | `npm install -g @github/copilot`                                                                        |
 | [`crush`](https://github.com/charmbracelet/crush)           | Charm's AI assistant | See [installation](https://github.com/charmbracelet/crush)                                                             |
 | [`cursor`](https://cursor.com/cli)                          | Cursor CLI agent     | See [Cursor docs](https://cursor.com/cli)                                                                              |
 | [`gemini`](https://github.com/google-gemini/gemini-cli)     | Google Gemini CLI    | See [repo](https://github.com/google-gemini/gemini-cli)                                                                |
