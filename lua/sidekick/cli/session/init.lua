@@ -138,11 +138,15 @@ function M.sessions()
     for _, s in pairs(backend:sessions()) do
       s.backend = name
       s.started = true
-      ret[#ret + 1] = M.new(s)
-      assert(not ids[s.id], "duplicate session id: " .. s.id)
-      ids[s.id] = true
-      if M._attached[s.id] then
-        M._attached[s.id] = ret[#ret] -- update to latest session instance
+      local session = M.new(s)
+      -- Filter out external sessions when mux is disabled
+      if not session.external or Config.cli.mux.enabled then
+        ret[#ret + 1] = session
+        assert(not ids[session.id], "duplicate session id: " .. session.id)
+        ids[session.id] = true
+        if M._attached[session.id] then
+          M._attached[session.id] = ret[#ret] -- update to latest session instance
+        end
       end
     end
   end
