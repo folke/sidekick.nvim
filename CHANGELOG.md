@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.2.0](https://github.com/folke/sidekick.nvim/compare/v2.1.0...v2.2.0) (2025-10-31)
+
+
+### Features
+
+* **terminal:** add files/buffers inline with spaces from picker. Closes [#133](https://github.com/folke/sidekick.nvim/issues/133) ([e743ac7](https://github.com/folke/sidekick.nvim/commit/e743ac74b90826d0b3a33f44c9906baa306e46b9))
+
+
+### Bug Fixes
+
+* **codex:** update deprecated search option ([#166](https://github.com/folke/sidekick.nvim/issues/166)) ([88cb6dd](https://github.com/folke/sidekick.nvim/commit/88cb6dd487ddf35134987654eec91e20fddc1e54))
+* **config:** update codex search option ([#167](https://github.com/folke/sidekick.nvim/issues/167)) ([c302dba](https://github.com/folke/sidekick.nvim/commit/c302dbaf0fcbde909838b296719bbf84e3db6e20))
+* **treesitter:** dont use treesitter stringbuffers ([317ada1](https://github.com/folke/sidekick.nvim/commit/317ada137f2b34cccc872b68f0a29d987cbce438))
+
 ## [2.1.0](https://github.com/folke/sidekick.nvim/compare/v2.0.0...v2.1.0) (2025-10-23)
 
 
