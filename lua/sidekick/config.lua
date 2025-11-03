@@ -107,7 +107,7 @@ local defaults = {
       copilot = { cmd = { "copilot", "--banner" } },
       crush = {
         cmd = { "crush" },
-        -- crush uses <a-p> for its own functionality, so we override the default
+        -- crush uses <c-p> for its own functionality, so we override the default
         keys = { prompt = { "<a-p>", "prompt" } },
       },
       cursor = { cmd = { "cursor-agent" } },
