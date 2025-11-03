@@ -117,6 +117,8 @@ local defaults = {
         cmd = { "opencode" },
         -- HACK: https://github.com/sst/opencode/issues/445
         env = { OPENCODE_THEME = "system" },
+        -- opencode uses <c-p> for its own functionality, so we override the default
+        keys = { prompt = { "<a-p>", "prompt" } },
       },
       qwen = { cmd = { "qwen" } },
     },
