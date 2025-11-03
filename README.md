@@ -686,7 +686,7 @@ The default keymaps are:
 
 - `q` (in normal mode): Hide the terminal window.
 - `<c-q>` (in terminal mode): Hide the terminal window.
-- `<c-w>p`: Leave the CLI window.
+- `<c-z>`: Leave the CLI window.
 - `<c-p>`: Insert prompt or context.
 
 <details><summary>Example of how to override the default keymaps
