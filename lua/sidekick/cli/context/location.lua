@@ -74,7 +74,7 @@ function M.get(ctx, opts)
     add(" ")
     if to and from[1] == to[1] and from[2] ~= to[2] then
       add(":", "L", from[1], ":", "C", from[2] + 1, "-", "C", to[2] + 1)
-    elseif to and from[2] ~= to[2] then
+    elseif to then
       add(":", "L", from[1], ":", "C", from[2] + 1, "-", "L", to[1], ":", "C", to[2] + 1)
     else
       add(":", "L", from[1], ":", "C", from[2] + 1)
