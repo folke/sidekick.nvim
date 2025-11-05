@@ -15,7 +15,11 @@ return {
     local ret = Text.to_string(text)
 
     -- transform line ranges to a format that Claude understands
+    ret = ret:gsub("@([^@]-) :L(%d+):C%d+%-L(%d+):C%d+", "@%1#L%2-%3")
+    ret = ret:gsub("@([^@]-) :L(%d+):C%d+%-C%d+", "@%1#L%2")
     ret = ret:gsub("@([^@]-) :L(%d+)%-L(%d+)", "@%1#L%2-%3")
+    ret = ret:gsub("@([^@]-) :L(%d+):C%d+", "@%1#L%2")
+    ret = ret:gsub("@([^@]-) :L(%d+)", "@%1#L%2")
 
     return ret
   end,
