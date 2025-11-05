@@ -337,7 +337,7 @@ local defaults = {
       aider = { cmd = { "aider" } },
       amazon_q = { cmd = { "q" } },
       claude = { cmd = { "claude" } },
-      codex = { cmd = { "codex", "--search" } },
+      codex = { cmd = { "codex", "--enable", "web_search_request" } },
       copilot = { cmd = { "copilot", "--banner" } },
       crush = {
         cmd = { "crush" },

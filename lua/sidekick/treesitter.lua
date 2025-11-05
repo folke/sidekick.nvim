@@ -1,5 +1,19 @@
 local M = {}
 
+M._scratch_buf = nil ---@type number?
+
+---@param source string
+function M.scratch_buf(source)
+  if not (M._scratch_buf and vim.api.nvim_buf_is_valid(M._scratch_buf)) then
+    M._scratch_buf = vim.api.nvim_create_buf(false, true)
+    vim.api.nvim_buf_set_name(M._scratch_buf, "sidekick://highlight")
+  end
+  vim.bo[M._scratch_buf].fixeol = false
+  vim.bo[M._scratch_buf].eol = false
+  vim.api.nvim_buf_set_lines(M._scratch_buf, 0, -1, false, vim.split(source, "\n", { plain = true }))
+  return M._scratch_buf
+end
+
 ---@param source string|number
 ---@param opts? {ft:string, start_row?: integer, end_row?: integer, bg?: string}
 ---@return sidekick.Text[]
@@ -121,20 +135,17 @@ end
 ---@param opts? {ft:string, start_row?: integer, end_row?: integer}
 function M.get_extmarks(source, opts)
   opts = opts or {}
-  local buf = type(source) == "number" and source or nil
-  assert(buf or opts.ft, "Either buf or ft should be specified")
+  assert(type(source) == "number" or opts.ft, "Either buf or ft should be specified")
 
-  local lang = vim.treesitter.language.get_lang(buf and vim.bo[buf].filetype or opts.ft)
+  local buf = type(source) == "number" and source or M.scratch_buf(source --[[@as string]])
+
+  local lang = vim.treesitter.language.get_lang(opts.ft or vim.bo[buf].filetype)
 
   local parser ---@type vim.treesitter.LanguageTree?
   if lang then
     lang = lang:lower()
     local ok = false
-    if buf then
-      ok, parser = pcall(vim.treesitter.get_parser, buf, lang)
-    else
-      ok, parser = pcall(vim.treesitter.get_string_parser, source, lang)
-    end
+    ok, parser = pcall(vim.treesitter.get_parser, buf, lang)
     parser = ok and parser or nil
   end
 
