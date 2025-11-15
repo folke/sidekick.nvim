@@ -29,8 +29,40 @@ function M:start()
     return
   end
 
-  -- Build command: wezterm cli split-pane --cwd <cwd> -- <tool.cmd>
-  local cmd = { "wezterm", "cli", "split-pane", "--cwd", self.cwd, "--" }
+  -- WezTerm only supports split mode (not terminal or window modes)
+  if Config.cli.mux.create ~= "split" then
+    Util.warn({
+      ("WezTerm does not support `opts.cli.mux.create = %q`."):format(Config.cli.mux.create),
+      ("Falling back to %q."):format("split"),
+      "Please update your config.",
+    })
+  end
+
+  -- Build command: wezterm cli split-pane --cwd <cwd> [split options] -- <tool.cmd>
+  local cmd = { "wezterm", "cli", "split-pane", "--cwd", self.cwd }
+
+  -- Add split direction (WezTerm: horizontal = left/right, vertical = top/bottom)
+  -- Note: In WezTerm, "horizontal" means the split line is horizontal (panes side-by-side)
+  if Config.cli.mux.split.vertical then
+    table.insert(cmd, "--horizontal")  -- Side-by-side split
+  else
+    table.insert(cmd, "--bottom")  -- Top-bottom split
+  end
+
+  -- Add split size
+  local size = Config.cli.mux.split.size
+  if size > 0 and size <= 1 then
+    -- Percentage (0-1)
+    table.insert(cmd, "--percent")
+    table.insert(cmd, tostring(math.floor(size * 100)))
+  elseif size > 1 then
+    -- Absolute cells
+    table.insert(cmd, "--cells")
+    table.insert(cmd, tostring(math.floor(size)))
+  end
+
+  -- Add command separator and tool command
+  table.insert(cmd, "--")
   vim.list_extend(cmd, self.tool.cmd)
 
   -- Execute and capture pane_id
