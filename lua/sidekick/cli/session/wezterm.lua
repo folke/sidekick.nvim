@@ -88,6 +88,36 @@ function M:submit()
   }, { notify = false })
 end
 
+--- Get process ID for a given TTY device
+---@param tty string TTY device path like "/dev/ttys000"
+---@return integer? pid
+local function get_pid_from_tty(tty)
+  if not tty then
+    return nil
+  end
+
+  -- Extract tty name (e.g., "ttys000" from "/dev/ttys000")
+  local tty_name = tty:match("/dev/(.+)$")
+  if not tty_name then
+    return nil
+  end
+
+  -- Use ps to find the process with this tty
+  local lines = Util.exec({ "ps", "-o", "pid=,tty=", "-a" }, { notify = false })
+  if not lines then
+    return nil
+  end
+
+  for _, line in ipairs(lines) do
+    local pid, line_tty = line:match("^%s*(%d+)%s+(%S+)")
+    if line_tty == tty_name and pid then
+      return tonumber(pid)
+    end
+  end
+
+  return nil
+end
+
 --- Check if the WezTerm pane still exists
 ---@return boolean
 function M:is_running()
