@@ -44,9 +44,9 @@ function M:start()
   -- Add split direction (WezTerm: horizontal = left/right, vertical = top/bottom)
   -- Note: In WezTerm, "horizontal" means the split line is horizontal (panes side-by-side)
   if Config.cli.mux.split.vertical then
-    table.insert(cmd, "--horizontal")  -- Side-by-side split
-  else
     table.insert(cmd, "--bottom")  -- Top-bottom split
+  else
+    table.insert(cmd, "--horizontal")  -- Side-by-side split
   end
 
   -- Add split size
