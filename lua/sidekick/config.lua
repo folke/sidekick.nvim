@@ -84,7 +84,7 @@ local defaults = {
       nav = nil,
     },
     ---@class sidekick.cli.Mux
-    ---@field backend? "tmux"|"zellij" Multiplexer backend to persist CLI sessions
+    ---@field backend? "tmux"|"zellij"|"wezterm" Multiplexer backend to persist CLI sessions
     mux = {
       backend = vim.env.ZELLIJ and "zellij" or "tmux", -- default to tmux unless zellij is detected
       enabled = false,
@@ -224,7 +224,7 @@ function M.setup(opts)
     require("sidekick.status").setup()
 
     M.validate("cli.win.layout", { "float", "left", "bottom", "top", "right" })
-    M.validate("cli.mux.backend", { "tmux", "zellij" })
+    M.validate("cli.mux.backend", { "tmux", "zellij", "wezterm" })
     M.validate("cli.mux.create", { "terminal", "window", "split" })
   end)
 end
