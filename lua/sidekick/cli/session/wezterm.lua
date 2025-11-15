@@ -88,4 +88,31 @@ function M:submit()
   }, { notify = false })
 end
 
+--- Check if the WezTerm pane still exists
+---@return boolean
+function M:is_running()
+  if not self.wezterm_pane_id then
+    return false
+  end
+
+  -- List all panes and check if our pane_id exists
+  local output = Util.exec({ "wezterm", "cli", "list", "--format", "json" }, { notify = false })
+  if not output then
+    return false
+  end
+
+  local ok, panes = pcall(vim.json.decode, table.concat(output, "\n"))
+  if not ok or type(panes) ~= "table" then
+    return false
+  end
+
+  for _, pane in ipairs(panes) do
+    if pane.pane_id == self.wezterm_pane_id then
+      return true
+    end
+  end
+
+  return false
+end
+
 return M
