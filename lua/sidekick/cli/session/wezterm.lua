@@ -145,4 +145,51 @@ function M:is_running()
   return false
 end
 
+--- List all active sidekick sessions in WezTerm panes
+---@return sidekick.cli.session.State[]
+function M.sessions()
+  -- Get all WezTerm panes
+  local output = Util.exec({ "wezterm", "cli", "list", "--format", "json" }, { notify = false })
+  if not output then
+    return {}
+  end
+
+  local ok, panes = pcall(vim.json.decode, table.concat(output, "\n"))
+  if not ok or type(panes) ~= "table" then
+    return {}
+  end
+
+  local ret = {} ---@type sidekick.cli.session.State[]
+  local tools = Config.tools()
+  local Procs = require("sidekick.cli.procs")
+  local procs = Procs.new()
+
+  -- Walk through each pane's processes
+  for _, pane in ipairs(panes) do
+    local pid = get_pid_from_tty(pane.tty_name)
+
+    if pid then
+      procs:walk(pid, function(proc)
+        for _, tool in pairs(tools) do
+          if tool:is_proc(proc) then
+            -- Parse cwd from file:// URL
+            local cwd = pane.cwd and pane.cwd:gsub("^file://", "") or proc.cwd
+
+            ret[#ret + 1] = {
+              id = "wezterm:" .. pane.pane_id,
+              cwd = cwd,
+              tool = tool,
+              wezterm_pane_id = pane.pane_id,
+              pids = Procs.pids(pid),
+            }
+            return true
+          end
+        end
+      end)
+    end
+  end
+
+  return ret
+end
+
 return M
