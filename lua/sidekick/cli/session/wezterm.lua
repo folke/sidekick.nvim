@@ -48,6 +48,10 @@ function M:start()
   end
 
   self.started = true
+
+  -- Save state to track this as a sidekick-created session
+  Util.set_state(tostring(self.wezterm_pane_id), { tool = self.tool.name, cwd = self.cwd })
+
   Util.info(("Started **%s** in WezTerm pane %d"):format(self.tool.name, self.wezterm_pane_id))
 end
 
@@ -166,6 +170,12 @@ function M.sessions()
 
   -- Walk through each pane's processes
   for _, pane in ipairs(panes) do
+    -- Only include panes that were created by sidekick
+    local state = Util.get_state(tostring(pane.pane_id))
+    if not state then
+      goto continue
+    end
+
     local pid = get_pid_from_tty(pane.tty_name)
 
     if pid then
@@ -187,6 +197,8 @@ function M.sessions()
         end
       end)
     end
+
+    ::continue::
   end
 
   return ret
