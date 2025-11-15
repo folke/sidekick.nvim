@@ -51,4 +51,41 @@ function M:start()
   Util.info(("Started **%s** in WezTerm pane %d"):format(self.tool.name, self.wezterm_pane_id))
 end
 
+--- Send text to WezTerm pane
+---@param text string
+function M:send(text)
+  if not self.wezterm_pane_id then
+    Util.error("Cannot send text: no pane ID available")
+    return
+  end
+
+  Util.exec({
+    "wezterm",
+    "cli",
+    "send-text",
+    "--pane-id",
+    tostring(self.wezterm_pane_id),
+    "--no-paste",
+    text,
+  }, { notify = false })
+end
+
+--- Submit current input (send newline)
+function M:submit()
+  if not self.wezterm_pane_id then
+    Util.error("Cannot submit: no pane ID available")
+    return
+  end
+
+  Util.exec({
+    "wezterm",
+    "cli",
+    "send-text",
+    "--pane-id",
+    tostring(self.wezterm_pane_id),
+    "--no-paste",
+    "\n",
+  }, { notify = false })
+end
+
 return M
