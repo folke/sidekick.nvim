@@ -21,6 +21,7 @@ without leaving your editor.
   - ✨ **Context-Aware Prompts**: Automatically include file content, cursor position, and diagnostics in your prompts.
   - 📝 **Prompt Library**: A library of pre-defined prompts for common tasks like explaining code, fixing issues, or writing tests.
   - 🔄 **Session Persistence**: Keep your CLI sessions alive with `tmux` and `zellij` integration.
+  - 🪟 **External Sessions**: Run CLI tools in separate `kitty` windows/tabs/splits (no persistence).
   - 📂 **Automatic File Watching**: Automatically reloads files in Neovim when they are modified by AI tools.
 
 - **🔌 Extensible and Customizable**
@@ -318,14 +319,16 @@ local defaults = {
       nav = nil,
     },
     ---@class sidekick.cli.Mux
-    ---@field backend? "tmux"|"zellij" Multiplexer backend to persist CLI sessions
+    ---@field backend? "tmux"|"zellij"|"kitty" Multiplexer backend to persist CLI sessions
     mux = {
-      backend = vim.env.ZELLIJ and "zellij" or "tmux", -- default to tmux unless zellij is detected
+      backend = vim.env.ZELLIJ and "zellij" or vim.env.KITTY_LISTEN_ON and "kitty" or "tmux", -- default based on environment
       enabled = false,
       -- terminal: new sessions will be created for each CLI tool and shown in a Neovim terminal
       -- window: when run inside a terminal multiplexer, new sessions will be created in a new tab
       -- split: when run inside a terminal multiplexer, new sessions will be created in a new split
       -- NOTE: zellij only supports `terminal`
+      -- NOTE: kitty supports all modes but does not persist sessions (tied to window lifecycle)
+      -- NOTE: with kitty, `terminal` opens a new OS window, which is more semantically correct for kitty
       create = "terminal", ---@type "terminal"|"window"|"split"
       split = {
         vertical = true, -- vertical or horizontal split
@@ -894,6 +897,70 @@ and **CLI sessions** in your statusline.
 
 </details>
 
+## 😺 Kitty Terminal
+
+Sidekick supports the Kitty terminal emulator as a session backend, allowing you to run CLI tools in external Kitty windows, tabs, or splits.
+
+The Kitty backend supports:
+
+- **External sessions**: CLI tools run in separate Kitty windows/tabs/splits
+- **Multiple creation modes**:
+  - `terminal`: Create a new OS window
+  - `window`: Create a new tab in the current OS window
+  - `split`: Create a split in the current tab
+
+### Requirements
+
+To use kitty as the backend, you must have:
+
+1. Kitty terminal emulator installed
+2. [Remote control](https://sw.kovidgoyal.net/kitty/remote-control) is enabled.
+   - You can do this, by either starting `kitty` with the following command:
+
+   ```bash
+   # For Linux only:
+   kitty -o allow_remote_control=yes --single-instance --listen-on unix:@mykitty
+
+   # Other UNIX systems:
+   kitty -o allow_remote_control=yes --single-instance --listen-on unix:/tmp/mykitty
+   ```
+
+   - OR, by defining the following in your `kitty.conf`:
+
+   ```text
+    # For Linux only:
+    allow_remote_control yes
+    listen_on unix:@mykitty
+
+    # Other UNIX systems:
+    allow_remote_control yes
+    listen_on unix:/tmp/mykitty
+   ```
+
+### Limitations
+
+- **No session persistence**: Sessions are tied to the OS window lifecycle
+- **No integrated terminal**: The `terminal` create mode opens a new OS-window, not a Neovim terminal
+- **Cannot detach/reattach**: Unlike tmux/zellij, you can't detach and reattach
+
+### Configuration Example
+
+```lua
+opts = {
+  cli = {
+    mux = {
+      enabled = true,
+      backend = "kitty",
+      create = "split", -- or "window" or "terminal"
+      split = {
+        vertical = true,
+        size = 0.5,
+      },
+    },
+  },
+}
+```
+
 ## ❓ FAQ
 
 ### Does sidekick.nvim replace Copilot's inline suggestions?
@@ -930,18 +997,21 @@ Use them together for the complete experience!
 
 ### Terminal sessions not persisting?
 
-Make sure you have tmux or zellij installed and enable the multiplexer:
+Make sure you have a terminal multiplexer installed and enable it:
 
 ```lua
 opts = {
   cli = {
     mux = {
       enabled = true,
-      backend = "tmux", -- or "zellij"
+      backend = "tmux", -- or "zellij" or "kitty"
     },
   },
 }
 ```
+
+> [!NOTE]
+> Kitty sessions are not persistent and will close when the Kitty window is closed. For true persistence, use tmux or zellij.
 
 ### Do I need a GitHub Copilot subscription?
 
