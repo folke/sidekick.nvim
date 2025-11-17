@@ -121,13 +121,16 @@ end
 function M.focus(opts)
   opts = filter_opts(opts)
   State.with(function(state)
-    if not state.terminal then
-      return
-    end
-    if state.terminal:is_focused() then
-      state.terminal:blur()
+    if state.terminal then
+      if state.terminal:is_focused() then
+        state.terminal:blur()
+      else
+        state.terminal:focus()
+      end
+    elseif state.session then
+      state.session:focus()
     else
-      state.terminal:focus()
+      return
     end
   end, {
     attach = true,
