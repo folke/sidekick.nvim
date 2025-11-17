@@ -52,6 +52,21 @@ function M:submit()
   Util.exec({ "kitty", "@", "send-key", "--match", ("id:%s"):format(self.mux_session), "enter" })
 end
 
+--- Focus the kitty window
+function M:focus()
+  if not self.mux_session then
+    return self
+  end
+  Util.exec({
+    "kitty",
+    "@",
+    "focus-window",
+    "--match",
+    ("id:%s"):format(self.mux_session),
+  }, { notify = false })
+  return self
+end
+
 --- Start a new kitty window/tab for the session
 ---@return sidekick.cli.terminal.Cmd?
 function M:start()
