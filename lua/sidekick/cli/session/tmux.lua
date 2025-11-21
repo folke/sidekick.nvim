@@ -199,9 +199,10 @@ end
 function M:focus()
   local pane_id = self:pane_id()
   if not pane_id then
-    return
+    return self
   end
   Util.exec({ "tmux", "select-pane", "-t", pane_id })
+  return self
 end
 
 return M
