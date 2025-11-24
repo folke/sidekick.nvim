@@ -375,6 +375,11 @@ function M:open_win()
   vim.w[self.win].sidekick_cli = self.tool
   vim.w[self.win].sidekick_session_id = self.id
   self:wo()
+
+  -- Balance window sizes after opening
+  if not is_float then
+    vim.cmd("wincmd =")
+  end
 end
 
 function M:focus()
