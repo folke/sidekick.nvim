@@ -353,6 +353,7 @@ local defaults = {
         env = { OPENCODE_THEME = "system" },
       },
       qwen = { cmd = { "qwen" } },
+      rovodev = { cmd = { "acli", "rovodev" } },
     },
     --- Add custom context. See `lua/sidekick/context/init.lua`
     ---@type table<string, sidekick.context.Fn>
@@ -734,7 +735,7 @@ Sidekick preconfigures popular AI CLIs. Run `:checkhealth sidekick` to see which
 | [`grok`](https://github.com/superagent-ai/grok-cli)         | xAI Grok CLI         | See [repo](https://github.com/superagent-ai/grok-cli)                                                                  |
 | [`opencode`](https://github.com/sst/opencode)               | OpenCode CLI         | `npm install -g opencode`                                                                                              |
 | [`qwen`](https://github.com/QwenLM/qwen-code)               | Alibaba Qwen Code    | See [repo](https://github.com/QwenLM/qwen-code)                                                                        |
-
+| [`rovodev`](https://www.atlassian.com/software/rovo-dev)    | Atlassian RovoDev CLI    | See [docs](https://support.atlassian.com/rovo/docs/use-rovo-dev-cli/)                                                                |
 > [!TIP]
 > After installing tools, restart Neovim or run `:Sidekick cli select` to see them available.
 
