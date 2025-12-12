@@ -101,7 +101,6 @@ local defaults = {
     ---@type table<string, sidekick.cli.Config|{}>
     tools = {
       aider = { cmd = { "aider" } },
-      amazon_q = { cmd = { "q" } },
       claude = { cmd = { "claude" } },
       codex = { cmd = { "codex", "--enable", "web_search_request" } },
       copilot = { cmd = { "copilot", "--banner" } },
@@ -113,6 +112,7 @@ local defaults = {
       cursor = { cmd = { "cursor-agent" } },
       gemini = { cmd = { "gemini" } },
       grok = { cmd = { "grok" } },
+      kiro = { cmd = { "kiro-cli" } },
       opencode = {
         cmd = { "opencode" },
         -- HACK: https://github.com/sst/opencode/issues/445
