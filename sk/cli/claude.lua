@@ -2,8 +2,10 @@
 ---@return string
 local function cwd_to_project(cwd)
   -- Convert /home/user/ghq/github.com/owner/repo -> -home-user-ghq-github-com-owner-repo
-  -- Claude replaces both / and . with -
-  return "-" .. cwd:gsub("^/", ""):gsub("[/.]", "-")
+  -- Claude replaces all non-alphanumeric characters (except -) with -
+  -- Example: test-path_with.symbols+chars@123[test](foo)~bar,baz%qux{}
+  --       -> -test-path-with-symbols-chars-123-test--foo--bar-baz-qux--
+  return "-" .. cwd:gsub("^/", ""):gsub("[^%w%-]", "-")
 end
 
 ---@param cwd string
