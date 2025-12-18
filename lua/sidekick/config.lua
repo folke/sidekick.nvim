@@ -3,6 +3,13 @@ local M = {}
 
 M.ns = vim.api.nvim_create_namespace("sidekick.ui")
 
+---@class sidekick.cli.session.Info
+---@field id string Session ID for resuming
+---@field title string Session title (displayed in picker)
+---@field updated number Last update timestamp (Unix time in seconds)
+---@field cli_name string CLI tool name
+---@field cwd string Working directory
+
 ---@class sidekick.Config
 local defaults = {
   jump = {
