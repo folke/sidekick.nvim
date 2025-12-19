@@ -12,30 +12,33 @@ end
 ---@param limit number
 ---@return sidekick.cli.session.Info[]
 local function discover_sessions(cwd, limit)
-  local sessions = {}
   local project = cwd_to_project(cwd)
-  local session_dir = vim.fn.expand("~/.claude/projects/" .. project)
+  local session_dir = vim.fs.normalize("~/.claude/projects/" .. project)
 
-  if vim.fn.isdirectory(session_dir) == 0 then
+  local stat = vim.uv.fs_stat(session_dir)
+  if not stat or stat.type ~= "directory" then
     return {}
   end
 
-  -- Find all .jsonl files (exclude agent-* files) and sort by mtime
-  local pattern = session_dir .. "/*.jsonl"
-  local files = vim.fn.glob(pattern, false, true)
-
-  -- Filter out agent files and get mtime for each
+  -- Find all .jsonl files (exclude agent-* files) and get mtime
+  local handle = vim.uv.fs_scandir(session_dir)
   local file_info = {}
-  for _, file in ipairs(files) do
-    local filename = vim.fn.fnamemodify(file, ":t")
-    if not filename:match("^agent%-") then
-      local stat = vim.loop.fs_stat(file)
-      if stat then
-        table.insert(file_info, {
-          path = file,
-          filename = filename,
-          mtime = stat.mtime.sec,
-        })
+  if handle then
+    while true do
+      local name, type = vim.uv.fs_scandir_next(handle)
+      if not name then
+        break
+      end
+      if type == "file" and name:match("%.jsonl$") and not name:match("^agent%-") then
+        local file_path = session_dir .. "/" .. name
+        local file_stat = vim.uv.fs_stat(file_path)
+        if file_stat then
+          table.insert(file_info, {
+            path = file_path,
+            filename = name,
+            mtime = file_stat.mtime.sec,
+          })
+        end
       end
     end
   end
@@ -46,29 +49,47 @@ local function discover_sessions(cwd, limit)
   end)
 
   -- Read only up to limit files
-  for i = 1, math.min(#file_info, limit) do
-    local info = file_info[i]
-    -- Read first line only
-    local lines = vim.fn.readfile(info.path, "", 1)
-    if #lines > 0 then
-      local ok, meta = pcall(vim.fn.json_decode, lines[1])
-      if ok and meta and meta.type == "summary" then
-        -- Extract session ID from filename (UUID)
-        local session_id = info.filename:match("^(.+)%.jsonl$")
-        if session_id then
-          table.insert(sessions, {
-            id = session_id,
-            title = meta.summary,
-            updated = info.mtime,
-            cli_name = "claude",
-            cwd = cwd,
-          })
+  return vim
+    .iter(file_info)
+    :take(limit)
+    :map(function(info)
+      local fd = vim.uv.fs_open(info.path, "r", 438)
+      if not fd then
+        return nil
+      end
+      local first_line_stat = vim.uv.fs_fstat(fd)
+      if not first_line_stat then
+        vim.uv.fs_close(fd)
+        return nil
+      end
+      -- Read up to 1KB for the first line (should be enough for summary)
+      local data = vim.uv.fs_read(fd, math.min(first_line_stat.size, 1024), 0)
+      vim.uv.fs_close(fd)
+
+      if data then
+        local first_line = data:match("^([^\n]*)")
+        if first_line then
+          local ok, meta = pcall(vim.json.decode, first_line)
+          if ok and meta and meta.type == "summary" then
+            -- Extract session ID from filename (UUID)
+            local session_id = info.filename:match("^(.+)%.jsonl$")
+            if session_id then
+              return {
+                id = session_id,
+                title = meta.summary,
+                updated = info.mtime,
+                cli_name = "claude",
+                cwd = cwd,
+              }
+            end
+          end
         end
       end
-    end
-  end
-
-  return sessions
+    end)
+    :filter(function(session)
+      return session ~= nil
+    end)
+    :totable()
 end
 
 ---@type sidekick.cli.Config
