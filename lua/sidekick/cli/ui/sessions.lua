@@ -104,7 +104,7 @@ function M.select(opts)
   vim.ui.select(sessions, select_opts, opts.cb)
 end
 
----@param session sidekick.cli.session.Info
+---@param session snacks.picker.Item
 ---@param picker? snacks.Picker
 ---@param max_cli_width? number Maximum CLI name width for padding
 ---@param max_time_width? number Maximum time string width for padding
