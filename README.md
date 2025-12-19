@@ -21,6 +21,7 @@ without leaving your editor.
   - ✨ **Context-Aware Prompts**: Automatically include file content, cursor position, and diagnostics in your prompts.
   - 📝 **Prompt Library**: A library of pre-defined prompts for common tasks like explaining code, fixing issues, or writing tests.
   - 🔄 **Session Persistence**: Keep your CLI sessions alive with `tmux` and `zellij` integration.
+  - 🔁 **Session Resume**: Browse and resume previous CLI conversations from any supported tool.
   - 📂 **Automatic File Watching**: Automatically reloads files in Neovim when they are modified by AI tools.
 
 - **🔌 Extensible and Customizable**
@@ -135,6 +136,11 @@ Install with your favorite manager. With [lazy.nvim](https://github.com/folke/la
       function() require("sidekick.cli").prompt() end,
       mode = { "n", "x" },
       desc = "Sidekick Select Prompt",
+    },
+    {
+      "<leader>ar",
+      function() require("sidekick.cli").select_session() end,
+      desc = "Resume CLI Session",
     },
     -- Example of a keybinding to open Claude directly
     {
@@ -542,6 +548,16 @@ require("sidekick.cli").prompt(opts)
 ```
 
 </td></tr>
+<tr><td><code>:Sidekick cli resume</code> Select and resume a CLI session</td><td>
+
+
+```lua
+---@param opts? sidekick.cli.SelectSession|{cb:nil}|{focus?:boolean, show?:boolean}
+---@overload fun(cb:fun(session?: sidekick.cli.session.Info))
+require("sidekick.cli").select_session(opts)
+```
+
+</td></tr>
 <tr><td> Render a message template or prompt</td><td>
 
 
@@ -793,6 +809,7 @@ Here's a list of the available commands:
 - `select`: Select a CLI tool to open.
 - `send`: Send a message to the current CLI tool.
 - `prompt`: Select a prompt to send to the current CLI tool.
+- `resume`: Select and resume a previous CLI session.
 
 </details>
 
@@ -835,6 +852,18 @@ Here are some examples of how to use the `:Sidekick` command:
 
   ```lua
   require("sidekick.cli").show({ name = "grok", focus = true })
+  ```
+
+- Resume a previous CLI session:
+
+  ```
+  :Sidekick cli resume
+  ```
+
+  Lua equivalent:
+
+  ```lua
+  require("sidekick.cli").select_session()
   ```
 
   </details>

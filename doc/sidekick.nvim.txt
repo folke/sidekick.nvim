@@ -39,6 +39,7 @@ FEATURES                                *sidekick.nvim-sidekick.nvim-features*
     - **Context-Aware Prompts**: Automatically include file content, cursor position, and diagnostics in your prompts.
     - **Prompt Library**: A library of pre-defined prompts for common tasks like explaining code, fixing issues, or writing tests.
     - **Session Persistence**: Keep your CLI sessions alive with `tmux` and `zellij` integration.
+    - **Session Resume**: Browse and resume previous CLI conversations from any supported tool.
     - **Automatic File Watching**: Automatically reloads files in Neovim when they are modified by AI tools.
 - **Extensible and Customizable**
     - **Flexible Configuration**: Fine-tune every aspect of the plugin to your liking.
@@ -156,6 +157,11 @@ Install with your favorite manager. With lazy.nvim
           function() require("sidekick.cli").prompt() end,
           mode = { "n", "x" },
           desc = "Sidekick Select Prompt",
+        },
+        {
+          "<leader>ar",
+          function() require("sidekick.cli").select_session() end,
+          desc = "Resume CLI Session",
         },
         -- Example of a keybinding to open Claude directly
         {
@@ -728,6 +734,7 @@ Here’s a list of the available commands:
 - `select`: Select a CLI tool to open.
 - `send`: Send a message to the current CLI tool.
 - `prompt`: Select a prompt to send to the current CLI tool.
+- `resume`: Select and resume a previous CLI session.
 
 Examples ~
 
@@ -756,6 +763,14 @@ Here are some examples of how to use the `:Sidekick` command:
     Lua equivalent:
     >lua
         require("sidekick.cli").show({ name = "grok", focus = true })
+    <
+- Resume a previous CLI session:
+    >
+        :Sidekick cli resume
+    <
+    Lua equivalent:
+    >lua
+        require("sidekick.cli").select_session()
     <
 
 
