@@ -56,6 +56,9 @@ M.commands = {
     prompt = function()
       require("sidekick.cli").prompt()
     end,
+    resume = function(opts)
+      require("sidekick.cli").select_session(opts)
+    end,
   },
   debug = {
     nes = {
