@@ -24,9 +24,9 @@ function M.discover_all_sessions(opts)
     end
   end
 
-  -- Sort all sessions by updated timestamp (ascending, oldest first)
+  -- Sort all sessions by updated timestamp (descending, newest first)
   table.sort(all_sessions, function(a, b)
-    return a.updated < b.updated
+    return a.updated > b.updated
   end)
 
   -- Apply global limit
