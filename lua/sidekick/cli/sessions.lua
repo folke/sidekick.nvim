@@ -67,6 +67,24 @@ function M.resume_session(session, opts)
     return
   end
 
+  -- Handle existing sessions
+  local sessions = Session.sessions()
+  for _, existing_session in pairs(sessions) do
+    local existing_state = State.get_state(existing_session)
+
+    if existing_session.tool.name == session.cli_name then
+      -- Same CLI: close it
+      if existing_state.terminal then
+        existing_state.terminal:close()
+      else
+        Session.detach(existing_session)
+      end
+    elseif existing_state.terminal and existing_state.terminal:is_open() then
+      -- Different CLI with open terminal: hide it
+      existing_state.terminal:hide()
+    end
+  end
+
   -- Build command with resume arguments
   local cmd = vim.deepcopy(tool.cmd)
   vim.list_extend(cmd, tool.config.resume)
