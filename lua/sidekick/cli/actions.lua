@@ -29,6 +29,9 @@ local function picker(source, t)
       on_show = function()
         t.normal_mode = false
       end,
+      on_close = function()
+        t:focus()
+      end,
     })
   end)
 end
