@@ -23,10 +23,15 @@ function M.get(ctx, opts)
   if not name or name == "" then
     name = "[No Name]"
   else
-    local cwd = ctx.cwd or vim.fn.getcwd(0)
-    local ok, rel = pcall(vim.fs.relpath, cwd, name)
+    local cwd = vim.fs.normalize(ctx.cwd or vim.fn.getcwd(0))
+    local normalized_name = vim.fs.normalize(name)
+    -- Try vim.fs.relpath first
+    local ok, rel = pcall(vim.fs.relpath, normalized_name, cwd)
     if ok and rel and rel ~= "" and rel ~= "." then
       name = rel
+    elseif normalized_name:sub(1, #cwd + 1) == cwd .. "/" then
+      -- Fallback: manual string prefix removal
+      name = normalized_name:sub(#cwd + 2)
     end
   end
 

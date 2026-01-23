@@ -54,8 +54,12 @@ local function filter_opts(opts)
   return opts
 end
 
+---@class sidekick.cli.PromptOpts
+---@field cb? fun(msg?:string, text?:sidekick.Text[])
+---@field cwd? string Override cwd for context resolution
+
 --- Select a prompt to send
----@param opts? sidekick.cli.Prompt|{cb:nil}
+---@param opts? sidekick.cli.PromptOpts
 ---@overload fun(cb:fun(msg?:string))
 function M.prompt(opts)
   opts = opts or {}
