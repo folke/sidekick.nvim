@@ -222,7 +222,7 @@ describe("diff", function()
       end,
     },
     {
-      name = "insertion after last column keeps inline change",
+      name = "insertion after last column produces inline add",
       inline = "words",
       edit = {
         from = { 0, #"local foo = 1" },
@@ -232,25 +232,18 @@ describe("diff", function()
       check = function(diff)
         local hunk = diff.hunks[1]
         assert.are.same(true, hunk.inline)
-        assert.are.same("change", hunk.kind)
+        assert.are.same("add", hunk.kind)
         assert.are.same({ 0, 12 }, hunk.pos)
-        assert.are.same(2, #hunk.extmarks)
-        assert.are.same({
-          row = 0,
-          col = 12,
-          end_col = 13,
-          hl_group = "SidekickDiffDelete",
-        }, hunk.extmarks[1])
+        assert.are.same(1, #hunk.extmarks)
         assert.are.same({
           row = 0,
           col = 13,
           virt_text = {
-            { "1", "SidekickDiffAdd" },
             { " ", "SidekickDiffAdd" },
             { "bar", "SidekickDiffAdd" },
           },
           virt_text_pos = "inline",
-        }, hunk.extmarks[2])
+        }, hunk.extmarks[1])
       end,
     },
     {

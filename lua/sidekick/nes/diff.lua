@@ -60,6 +60,12 @@ end
 function M._diff(a, b, opts)
   local txt_a = table.concat(a, "\n")
   local txt_b = table.concat(b, "\n")
+  if txt_a ~= "" then
+    txt_a = txt_a .. "\n"
+  end
+  if txt_b ~= "" then
+    txt_b = txt_b .. "\n"
+  end
   ---@diagnostic disable-next-line: deprecated
   return (vim.text.diff or vim.diff)(txt_a, txt_b, opts) --[[@as (integer[][])]]
 end
