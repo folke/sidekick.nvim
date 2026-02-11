@@ -240,7 +240,7 @@ function M:start()
     READY_CHECK_INTERVAL,
     vim.schedule_wrap(function()
       local elapsed = (vim.uv.hrtime() - ready_start) / 1e6 -- ms
-      if not self:buf_valid() then
+      if not self:buf_valid() or not self:win_valid() then
         return
       end
       if elapsed > READY_MAX_WAIT then
