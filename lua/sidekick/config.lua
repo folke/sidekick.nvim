@@ -105,6 +105,7 @@ local defaults = {
       claude = { cmd = { "claude" } },
       codex = { cmd = { "codex", "--enable", "web_search_request" } },
       copilot = { cmd = { "copilot", "--banner" } },
+      cortex = { cmd = { "cortex" } },
       crush = {
         cmd = { "crush" },
         -- crush uses <a-p> for its own functionality, so we override the default
