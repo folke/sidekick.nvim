@@ -337,7 +337,7 @@ local defaults = {
       aider = { cmd = { "aider" } },
       amazon_q = { cmd = { "q" } },
       claude = { cmd = { "claude" } },
-      codex = { cmd = { "codex", "--enable", "web_search_request" } },
+      codex = { cmd = { "codex" } },
       copilot = { cmd = { "copilot", "--banner" } },
       crush = {
         cmd = { "crush" },
@@ -421,7 +421,6 @@ modify text in normal mode, or after applying an edit.
 <table><tr><th>Cmd</th><th>Lua</th></tr>
 <tr><td><code>:Sidekick nes apply</code> Apply active text edits</td><td>
 
-
 ```lua
 ---@return boolean applied
 require("sidekick.nes").apply()
@@ -430,14 +429,12 @@ require("sidekick.nes").apply()
 </td></tr>
 <tr><td><code>:Sidekick nes clear</code> Clear all active edits</td><td>
 
-
 ```lua
 require("sidekick.nes").clear()
 ```
 
 </td></tr>
 <tr><td><code>:Sidekick nes disable</code> </td><td>
-
 
 ```lua
 
@@ -447,7 +444,6 @@ require("sidekick.nes").disable()
 </td></tr>
 <tr><td><code>:Sidekick nes enable</code> </td><td>
 
-
 ```lua
 ---@param enable? boolean
 require("sidekick.nes").enable(enable)
@@ -456,14 +452,12 @@ require("sidekick.nes").enable(enable)
 </td></tr>
 <tr><td> Check if any edits are active in the current buffer</td><td>
 
-
 ```lua
 require("sidekick.nes").have()
 ```
 
 </td></tr>
 <tr><td><code>:Sidekick nes jump</code> Jump to the start of the active edit</td><td>
-
 
 ```lua
 ---@return boolean jumped
@@ -473,7 +467,6 @@ require("sidekick.nes").jump()
 </td></tr>
 <tr><td><code>:Sidekick nes toggle</code> </td><td>
 
-
 ```lua
 
 require("sidekick.nes").toggle()
@@ -481,7 +474,6 @@ require("sidekick.nes").toggle()
 
 </td></tr>
 <tr><td><code>:Sidekick nes update</code> Request new edits from the LSP server (if any)</td><td>
-
 
 ```lua
 require("sidekick.nes").update()
@@ -504,7 +496,6 @@ diagnostics when requested.
 <table><tr><th>Cmd</th><th>Lua</th></tr>
 <tr><td><code>:Sidekick cli close</code> </td><td>
 
-
 ```lua
 ---@param opts? sidekick.cli.Hide
 ---@overload fun(name: string)
@@ -513,7 +504,6 @@ require("sidekick.cli").close(opts)
 
 </td></tr>
 <tr><td><code>:Sidekick cli focus</code> Toggle focus of the terminal window if it is already open</td><td>
-
 
 ```lua
 ---@param opts? sidekick.cli.Show
@@ -524,7 +514,6 @@ require("sidekick.cli").focus(opts)
 </td></tr>
 <tr><td><code>:Sidekick cli hide</code> </td><td>
 
-
 ```lua
 ---@param opts? sidekick.cli.Hide
 ---@overload fun(name: string)
@@ -533,7 +522,6 @@ require("sidekick.cli").hide(opts)
 
 </td></tr>
 <tr><td><code>:Sidekick cli prompt</code> Select a prompt to send</td><td>
-
 
 ```lua
 ---@param opts? sidekick.cli.Prompt|{cb:nil}
@@ -544,7 +532,6 @@ require("sidekick.cli").prompt(opts)
 </td></tr>
 <tr><td> Render a message template or prompt</td><td>
 
-
 ```lua
 ---@param opts? sidekick.cli.Message|string
 require("sidekick.cli").render(opts)
@@ -552,7 +539,6 @@ require("sidekick.cli").render(opts)
 
 </td></tr>
 <tr><td><code>:Sidekick cli select</code> Start or attach to a CLI tool</td><td>
-
 
 ```lua
 ---@param opts? sidekick.cli.Select|{cb:nil}|{focus?:boolean}
@@ -563,7 +549,6 @@ require("sidekick.cli").select(opts)
 </td></tr>
 <tr><td><code>:Sidekick cli send</code> Send a message or prompt to a CLI</td><td>
 
-
 ```lua
 ---@param opts? sidekick.cli.Send
 ---@overload fun(msg:string)
@@ -573,7 +558,6 @@ require("sidekick.cli").send(opts)
 </td></tr>
 <tr><td><code>:Sidekick cli show</code> </td><td>
 
-
 ```lua
 ---@param opts? sidekick.cli.Show
 ---@overload fun(name: string)
@@ -582,7 +566,6 @@ require("sidekick.cli").show(opts)
 
 </td></tr>
 <tr><td><code>:Sidekick cli toggle</code> </td><td>
-
 
 ```lua
 ---@param opts? sidekick.cli.Show
