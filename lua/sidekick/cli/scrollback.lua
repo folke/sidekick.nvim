@@ -229,13 +229,12 @@ function M:scroll(win_pos)
   local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
   local lnum = #lines
   local col = 0
-  -- Strip ANSI escape sequences (e.g. "\27[1;32m") before checking for
-  -- non-whitespace, so that lines containing only color codes are treated as
-  -- blank and don't become the "last non-empty line" anchor.
+  -- Strip ANSI escape sequences (e.g. "\27[1;32m") before checking for non-whitespace
   while lnum > 1 and not lines[lnum]:gsub("\27%[[%d;]*%a", ""):find("%S") do
     lnum = lnum - 1
   end
   local height = vim.api.nvim_win_get_height(terminal.win)
+  -- Anchor the scroll to the last non-blank line
   local topline = math.max(1, lnum - height + 1) -- scroll to bottom
   lnum = math.min(math.max(topline, lnum), topline + height - 1)
   col = math.min(math.max(0, col), #lines[lnum] + 1)
