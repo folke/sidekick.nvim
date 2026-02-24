@@ -229,6 +229,9 @@ function M:scroll(win_pos)
   local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
   local lnum = #lines
   local col = 0
+  -- Strip ANSI escape sequences (e.g. "\27[1;32m") before checking for
+  -- non-whitespace, so that lines containing only color codes are treated as
+  -- blank and don't become the "last non-empty line" anchor.
   while lnum > 1 and not lines[lnum]:gsub("\27%[[%d;]*%a", ""):find("%S") do
     lnum = lnum - 1
   end
