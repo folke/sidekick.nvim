@@ -229,11 +229,11 @@ function M:scroll(win_pos)
   local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
   local lnum = #lines
   local col = 0
-  while lnum > 1 and not lines[lnum]:find("%S") do
+  while lnum > 1 and not lines[lnum]:gsub("\27%[[%d;]*%a", ""):find("%S") do
     lnum = lnum - 1
   end
   local height = vim.api.nvim_win_get_height(terminal.win)
-  local topline = math.max(1, #lines - height + 1) -- scroll to bottom
+  local topline = math.max(1, lnum - height + 1) -- scroll to bottom
   lnum = math.min(math.max(topline, lnum), topline + height - 1)
   col = math.min(math.max(0, col), #lines[lnum] + 1)
   vim.api.nvim_win_call(terminal.win, function()
