@@ -47,6 +47,16 @@ local function nav(dir)
   return function(terminal)
     local at_edge = vim.fn.winnr() == vim.fn.winnr(dir)
     if at_edge or terminal:is_float() then
+      -- When running under a mux backend (e.g., tmux via psmux on Windows),
+      -- returning the key as an expr string passes through Neovim's terminal
+      -- emulation, which can mangle control characters (e.g., C-j becomes CR).
+      -- Send the key directly to the mux pane instead.
+      if terminal.parent and terminal.parent.send_key then
+        vim.schedule(function()
+          terminal.parent:send_key(("C-%s"):format(dir))
+        end)
+        return
+      end
       return ("<c-%s>"):format(dir)
     end
     vim.schedule(function()
