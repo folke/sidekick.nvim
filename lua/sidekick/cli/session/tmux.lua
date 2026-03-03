@@ -186,6 +186,14 @@ function M:submit()
   Util.exec({ "tmux", "send-keys", "-t", self.tmux_pane_id, "Enter" })
 end
 
+---Send a raw key to a tmux pane
+---@param key string tmux key name (e.g., "C-j", "Enter", "Escape")
+function M:send_key(key)
+  if self.mux_session then
+    Util.exec({ "tmux", "send-keys", "-t", self.mux_session, key })
+  end
+end
+
 function M:dump()
   local pane_id = self:pane_id()
   if not pane_id then
