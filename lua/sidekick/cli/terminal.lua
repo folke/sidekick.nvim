@@ -491,7 +491,8 @@ function M:submit()
   if not self:is_running() then
     return
   end
-  self:send("\r") -- Updated to use the send method
+  -- Send carriage return directly to avoid queueing
+  vim.api.nvim_chan_send(self.job, "\r")
 end
 
 ---@param buf? integer
