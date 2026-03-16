@@ -120,6 +120,7 @@ local defaults = {
       },
       pi = { cmd = { "pi" } },
       qwen = { cmd = { "qwen" } },
+      amp = { cmd = { "amp", "--ide" } },
     },
     --- Add custom context. See `lua/sidekick/context/init.lua`
     ---@type table<string, sidekick.context.Fn>

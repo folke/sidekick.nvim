@@ -735,6 +735,7 @@ Sidekick preconfigures popular AI CLIs. Run `:checkhealth sidekick` to see which
 | [`grok`](https://github.com/superagent-ai/grok-cli)         | xAI Grok CLI         | See [repo](https://github.com/superagent-ai/grok-cli)                                                                  |
 | [`opencode`](https://github.com/sst/opencode)               | OpenCode CLI         | `npm install -g opencode`                                                                                              |
 | [`qwen`](https://github.com/QwenLM/qwen-code)               | Alibaba Qwen Code    | See [repo](https://github.com/QwenLM/qwen-code)                                                                        |
+| [`amp`](https://ampcode.com/install) | Sourcegraph Amp CLI | See [Amp docs](https://ampcode.com/manual) |
 
 > [!TIP]
 > After installing tools, restart Neovim or run `:Sidekick cli select` to see them available.
