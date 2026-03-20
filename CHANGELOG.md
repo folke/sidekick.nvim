@@ -1,5 +1,27 @@
 # Changelog
 
+## [2.2.0](https://github.com/folke/sidekick.nvim/compare/v2.1.0...v2.2.0) (2026-03-20)
+
+
+### Features
+
+* **agents:** add pi agent ([#247](https://github.com/folke/sidekick.nvim/issues/247)) ([7e9da9b](https://github.com/folke/sidekick.nvim/commit/7e9da9b12a5da46c6abd57ebf650e9d32c483ce7))
+* **nes:** set `nes.diff.show = "cursor"` to only show nes diffs at the cursor. Closes [#266](https://github.com/folke/sidekick.nvim/issues/266) ([b1568d3](https://github.com/folke/sidekick.nvim/commit/b1568d37ca0842eb772c86b3e9f214d075bfbf8d))
+* **terminal:** add files/buffers inline with spaces from picker. Closes [#133](https://github.com/folke/sidekick.nvim/issues/133) ([e743ac7](https://github.com/folke/sidekick.nvim/commit/e743ac74b90826d0b3a33f44c9906baa306e46b9))
+* **terminal:** make re-entering terminal/normal mode more sensible ([9eb6530](https://github.com/folke/sidekick.nvim/commit/9eb653079f9055fe62ff63e918c36c7c4c92e0a9))
+
+
+### Bug Fixes
+
+* **codex:** update deprecated search option ([#166](https://github.com/folke/sidekick.nvim/issues/166)) ([88cb6dd](https://github.com/folke/sidekick.nvim/commit/88cb6dd487ddf35134987654eec91e20fddc1e54))
+* **config:** remove web search option from codex command ([#257](https://github.com/folke/sidekick.nvim/issues/257)) ([f8b4f58](https://github.com/folke/sidekick.nvim/commit/f8b4f58c3b8b2cf8ddffa8d6c23b95c9010ae158))
+* **config:** update codex search option ([#167](https://github.com/folke/sidekick.nvim/issues/167)) ([c302dba](https://github.com/folke/sidekick.nvim/commit/c302dbaf0fcbde909838b296719bbf84e3db6e20))
+* **nes:** correct inline diff artifact when appending to end of line ([#250](https://github.com/folke/sidekick.nvim/issues/250)) ([f95ba54](https://github.com/folke/sidekick.nvim/commit/f95ba541970c41a631d480062afedb0ebc455e19))
+* **nes:** never process cancelled (or out of order) requests ([f8eac10](https://github.com/folke/sidekick.nvim/commit/f8eac1017ee6a13b9b9a827ca7708b52c00c1e72))
+* **opencode:** Use alt+p instead of ctrl+p. Fixes [#175](https://github.com/folke/sidekick.nvim/issues/175) ([a6fe80f](https://github.com/folke/sidekick.nvim/commit/a6fe80fc9d0a1db2bb7a55e8f313ed9e17282e3e))
+* **terminal:** ready check should not fail if cli window is closed. Fixes [#252](https://github.com/folke/sidekick.nvim/issues/252) ([6b69c42](https://github.com/folke/sidekick.nvim/commit/6b69c42031950164b208b1abf78018ab4a86cdec))
+* **treesitter:** dont use treesitter stringbuffers ([317ada1](https://github.com/folke/sidekick.nvim/commit/317ada137f2b34cccc872b68f0a29d987cbce438))
+
 ## [2.1.0](https://github.com/folke/sidekick.nvim/compare/v2.0.0...v2.1.0) (2025-10-23)
 
 
