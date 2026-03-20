@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.3.0](https://github.com/folke/sidekick.nvim/compare/v2.2.0...v2.3.0) (2026-03-20)
+
+
+### Features
+
+* **config:** ctrl+x now blurs instead of another hide ([122c1ca](https://github.com/folke/sidekick.nvim/commit/122c1ca62fa27b4c2213879bbb04d890a16468ce))
+
+
+### Bug Fixes
+
+* **cli:** incorrect range when on same row. Closes [#186](https://github.com/folke/sidekick.nvim/issues/186). Fixes [#184](https://github.com/folke/sidekick.nvim/issues/184) ([ff8ef47](https://github.com/folke/sidekick.nvim/commit/ff8ef479ff6b2f560cfbca0d8b4b8b4593969ab0))
+* **docs:** update Claude installation instructions ([#255](https://github.com/folke/sidekick.nvim/issues/255)) ([43c7a11](https://github.com/folke/sidekick.nvim/commit/43c7a11b397afc7cc3c14113a52811a0d32ef6bf))
+
 ## [2.2.0](https://github.com/folke/sidekick.nvim/compare/v2.1.0...v2.2.0) (2026-03-20)
 
 
