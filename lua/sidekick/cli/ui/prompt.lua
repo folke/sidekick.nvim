@@ -5,15 +5,12 @@ local Context = require("sidekick.cli.context")
 
 local M = {}
 
----@class sidekick.cli.Prompt
----@field cb fun(msg?:string, text?:sidekick.Text[])
-
----@param opts sidekick.cli.Prompt
+---@param opts sidekick.cli.PromptOpts
 function M.select(opts)
   assert(type(opts) == "table", "opts must be a table")
   local prompts = vim.tbl_keys(Config.cli.prompts) ---@type string[]
   table.sort(prompts)
-  local context = Context.get()
+  local context = Context.get(opts.cwd)
 
   ---@param msg string
   local function tpl(msg)

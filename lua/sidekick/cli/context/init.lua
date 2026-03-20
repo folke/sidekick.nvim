@@ -79,9 +79,10 @@ M.context = {
 local C = {}
 C.__index = C
 
-function C.new()
+---@param cwd? string Optional cwd override for path resolution
+function C.new(cwd)
   local self = setmetatable({}, C)
-  self.ctx = M.ctx()
+  self.ctx = M.ctx(cwd)
   self.context = {}
   return self
 end
@@ -190,7 +191,8 @@ function M.fn(name)
   return Config.cli.context[name] or M.context[name] or nil
 end
 
-function M.ctx()
+---@param cwd_override? string Optional cwd override for path resolution
+function M.ctx(cwd_override)
   ---@param w integer
   local wins = vim.tbl_filter(function(w)
     local buf = vim.api.nvim_win_get_buf(w)
@@ -206,7 +208,7 @@ function M.ctx()
   return {
     win = win,
     buf = buf,
-    cwd = vim.fs.normalize(vim.fn.getcwd(win)),
+    cwd = vim.fs.normalize(cwd_override or vim.fn.getcwd(win)),
     row = cursor[1],
     col = cursor[2] + 1,
     range = M.selection(buf),

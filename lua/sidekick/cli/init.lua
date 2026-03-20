@@ -35,6 +35,7 @@ local M = {}
 
 ---@class sidekick.cli.Send: sidekick.cli.Show,sidekick.cli.Message
 ---@field submit? boolean
+---@field cwd? string Override cwd for context resolution (e.g., parent directory)
 
 --- Keymap options similar to `vim.keymap.set` and `lazy.nvim` mappings
 ---@class sidekick.cli.Keymap: vim.keymap.set.Opts
@@ -53,8 +54,12 @@ local function filter_opts(opts)
   return opts
 end
 
+---@class sidekick.cli.PromptOpts
+---@field cb? fun(msg?:string, text?:sidekick.Text[])
+---@field cwd? string Override cwd for context resolution
+
 --- Select a prompt to send
----@param opts? sidekick.cli.Prompt|{cb:nil}
+---@param opts? sidekick.cli.PromptOpts
 ---@overload fun(cb:fun(msg?:string))
 function M.prompt(opts)
   opts = opts or {}
@@ -161,8 +166,9 @@ end
 
 -- Render a message template or prompt
 ---@param opts? sidekick.cli.Message|string
-function M.render(opts)
-  return Context.get():render(opts or "")
+---@param cwd? string Optional cwd override for context resolution
+function M.render(opts, cwd)
+  return Context.get(cwd):render(opts or "")
 end
 
 --- Send a message or prompt to a CLI
@@ -178,7 +184,7 @@ function M.send(opts)
 
   local msg, text = "", opts.text ---@type string?, sidekick.Text[]?
   if not text then
-    msg, text = M.render(opts)
+    msg, text = M.render(opts, opts.cwd)
     if msg == "" or not text then
       Util.warn("Nothing to send.")
       return

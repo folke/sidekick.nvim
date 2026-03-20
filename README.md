@@ -627,6 +627,18 @@ current file, selection, diagnostics, and more.
 
 </details>
 
+### Custom Working Directory
+
+You can override the working directory used when resolving context variables
+by passing a `cwd` option to `send()`, `prompt()`, or `render()`:
+
+```lua
+require("sidekick.cli").send({
+  msg = "{file}",
+  cwd = "/path/to/custom/directory"
+})
+```
+
 ### Snacks.nvim Picker Integration
 
 If you're using [snacks.nvim](https://github.com/folke/snacks.nvim), you can send picker selections directly to Sidekick's AI CLI tools. This is useful for sending search results, grep matches, or file selections as context.
