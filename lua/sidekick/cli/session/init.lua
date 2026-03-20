@@ -191,6 +191,12 @@ function M.attach(session)
     session:start()
   end
   M._attached[session.id] = session
+
+  -- Enable watch for any attached session (not just terminal)
+  if Config.cli.watch then
+    require("sidekick.cli.watch").enable()
+  end
+
   Util.emit("SidekickCliAttach", { id = session.id })
   return session
 end
