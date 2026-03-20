@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.4.0](https://github.com/folke/sidekick.nvim/compare/v2.3.0...v2.4.0) (2026-03-20)
+
+
+### Features
+
+* **context:** added source & code to diagnoistics context ([8ad0ede](https://github.com/folke/sidekick.nvim/commit/8ad0ede3ff9065878a853e4b037ba6ac88231fb0))
+
 ## [2.3.0](https://github.com/folke/sidekick.nvim/compare/v2.2.0...v2.3.0) (2026-03-20)
 
 
