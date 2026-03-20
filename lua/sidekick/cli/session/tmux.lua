@@ -30,11 +30,25 @@ end
 ---@return sidekick.cli.terminal.Cmd?
 function M:start()
   if not self.external then
-    local cmd = { "tmux", "new", "-A", "-s", self.id }
+    -- Sanitize session name: replace spaces with hyphens for psmux/Windows compatibility
+    local session_name = self.id:gsub("%s+", "-")
+    self.mux_session = session_name
+    local cmd = { "tmux", "new", "-A", "-s", session_name }
     vim.list_extend(cmd, { "-c", self.cwd })
     self:add_cmd(cmd)
-    vim.list_extend(cmd, { ";", "set-option", "status", "off" })
-    vim.list_extend(cmd, { ";", "set-option", "detach-on-destroy", "on" })
+    if vim.fn.has("win32") == 1 then
+      -- On Windows (psmux), ";" command chaining is not supported.
+      -- PowerShell interprets ";" as a statement separator, causing
+      -- "set-option" to be run as a standalone cmdlet (which fails).
+      -- Instead, run set-option as separate commands after the session starts.
+      vim.defer_fn(function()
+        vim.fn.system({ "tmux", "set-option", "-t", session_name, "status", "off" })
+        vim.fn.system({ "tmux", "set-option", "-t", session_name, "detach-on-destroy", "on" })
+      end, 1000)
+    else
+      vim.list_extend(cmd, { ";", "set-option", "status", "off" })
+      vim.list_extend(cmd, { ";", "set-option", "detach-on-destroy", "on" })
+    end
     return { cmd = cmd }
   elseif Config.cli.mux.create == "window" then
     local cmd = { "tmux", "new-window", "-dP", "-c", self.cwd, "-F", PANE_FORMAT }
