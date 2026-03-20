@@ -50,6 +50,9 @@ M.commands = {
     select = function(opts)
       require("sidekick.cli").select(opts)
     end,
+    new = function(opts)
+      require("sidekick.cli").new(opts)
+    end,
     send = function(opts)
       require("sidekick.cli").send(opts)
     end,
