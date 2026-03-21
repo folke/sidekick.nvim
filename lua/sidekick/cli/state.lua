@@ -194,9 +194,15 @@ function M.attach(state, opts)
         terminal:focus()
       end
     end
+  elseif state.session then
+    -- External session (tmux/kitty/zellij pane)
+    if opts.focus and state.external and session.focus then
+      session:focus()
+    end
   elseif attached then
     Util.info("Attached to `" .. state.tool.name .. "`")
   end
+
   return state, attached
 end
 

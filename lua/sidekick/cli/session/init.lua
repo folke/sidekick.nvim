@@ -52,6 +52,9 @@ function B:attach() end
 --- Detach from an existing session
 function B:detach() end
 
+--- Focus on an external session (kitty/tmux/zellij pane)
+function B:focus() end
+
 --- Start a new session
 --- If the backend returns a Cmd, a new terminal session will be spawned
 ---@return sidekick.cli.terminal.Cmd?
@@ -121,7 +124,11 @@ function M.setup()
   end
   M.did_setup = true
   Config.tools() -- load tools, since they may register session backends
-  local session_backends = { tmux = "sidekick.cli.session.tmux", zellij = "sidekick.cli.session.zellij" }
+  local session_backends = {
+    tmux = "sidekick.cli.session.tmux",
+    zellij = "sidekick.cli.session.zellij",
+    kitty = "sidekick.cli.session.kitty",
+  }
   for name, mod in pairs(session_backends) do
     if vim.fn.executable(name) == 1 then
       M.register(name, require(mod))
