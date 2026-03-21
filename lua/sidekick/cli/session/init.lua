@@ -121,7 +121,11 @@ function M.setup()
   end
   M.did_setup = true
   Config.tools() -- load tools, since they may register session backends
-  local session_backends = { tmux = "sidekick.cli.session.tmux", zellij = "sidekick.cli.session.zellij" }
+  local session_backends = {
+    tmux = "sidekick.cli.session.tmux",
+    zellij = "sidekick.cli.session.zellij",
+    wezterm = "sidekick.cli.session.wezterm",
+  }
   for name, mod in pairs(session_backends) do
     if vim.fn.executable(name) == 1 then
       M.register(name, require(mod))
