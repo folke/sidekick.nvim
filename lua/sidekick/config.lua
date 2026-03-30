@@ -106,6 +106,7 @@ local defaults = {
     tools = {
       aider    = {},
       amazon_q = {},
+      amp      = {},
       claude   = {},
       codex    = {},
       copilot  = {},
