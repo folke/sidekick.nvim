@@ -79,6 +79,9 @@ function M:add_cmd(ret)
       vim.list_extend(ret, { "-e", ("%s=%s"):format(key, tostring(value)) })
     end
   end
+  if Config.cli.mux.direnv and vim.fn.executable("direnv") == 1 then
+    vim.list_extend(ret, { "direnv", "exec", self.cwd })
+  end
   vim.list_extend(ret, self.tool.cmd)
 end
 

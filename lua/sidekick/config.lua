@@ -94,6 +94,10 @@ local defaults = {
         vertical = true, -- vertical or horizontal split
         size = 0.5, -- size of the split (0-1 for percentage)
       },
+      -- when true and `direnv` is on PATH, tool commands spawned in external
+      -- tmux panes are wrapped with `direnv exec <cwd>` so per-project
+      -- .envrc files are applied.
+      direnv = false,
     },
     --- Actual cli tool config is loaded from the runtime path `sk/cli/{tool}.lua` and merged with the config below.
     --- For default configs, see https://github.com/folke/sidekick.nvim/tree/main/sk/cli
