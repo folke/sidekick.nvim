@@ -19,6 +19,7 @@ layout {
       {args}
    }
 }
+default_mode "locked"
 session_serialization false
 ]]
 
