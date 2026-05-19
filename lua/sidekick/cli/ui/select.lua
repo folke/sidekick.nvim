@@ -98,8 +98,10 @@ function M.format(state, picker)
 
     local backends = {} ---@type string[]
     backends[#backends + 1] = state.session.mux_backend or state.session.backend
-    if state.external then
-      backends[#backends + 1] = state.session.mux_session
+    local mux_session = state.session.mux_session or (state.session.parent and state.session.parent.mux_session)
+    -- Check if it's an opencode session since we populate mux_session with the tmux session+pane id
+    if state.external or (state.tool and state.tool.name == "opencode") or mux_session then
+      backends[#backends + 1] = mux_session
     end
     local backend = ("[%s]"):format(table.concat(backends, ":"))
 

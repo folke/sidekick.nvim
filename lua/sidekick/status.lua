@@ -27,10 +27,17 @@ local function update_cli_status()
   local Session = require("sidekick.cli.session")
   cli_sessions = {}
   for id, session in pairs(Session.attached()) do
+    local mux_session = session.mux_session
+    if session.parent and session.parent.mux_session then
+      mux_session = session.parent.mux_session
+    end
+    
     cli_sessions[id] = {
       id = session.id,
       tool = session.tool.name,
       cwd = session.cwd,
+      mux_backend = session.mux_backend or session.backend,
+      mux_session = mux_session,
     }
   end
 end

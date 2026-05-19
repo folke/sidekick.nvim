@@ -60,7 +60,17 @@ function M:spawn(cmd)
   if pane then
     self.id = pane.skid
     self.tmux_pane_id = pane.id
-    self.mux_session = pane.session_name
+    
+    local display_name = pane.session_name
+    local lines = Util.exec({
+      "tmux", "display-message", "-p", "-t", pane.id,
+      "#{session_name}:#{window_index}.#{pane_index}"
+    }, { notify = false })
+    if lines and lines[1] then
+      display_name = lines[1]:gsub("%s+$", "")
+    end
+    
+    self.mux_session = display_name
     self.tmux_pid = pane.pid
     self.started = true
   end
@@ -136,13 +146,23 @@ function M.sessions()
         if tool:is_proc(proc) then
           local pids = Procs.pids(pane.pid)
           vim.list_extend(pids, clients[pane.session_id] or {})
+          
+          local display_name = pane.session_name
+          local lines = Util.exec({
+            "tmux", "display-message", "-p", "-t", pane.id,
+            "#{session_name}:#{window_index}.#{pane_index}"
+          }, { notify = false })
+          if lines and lines[1] then
+            display_name = lines[1]:gsub("%s+$", "")
+          end
+
           ret[#ret + 1] = {
             id = pane.skid,
             cwd = proc.cwd or pane.cwd,
             tool = tool,
             tmux_pane_id = pane.id,
             tmux_pid = pane.pid,
-            mux_session = pane.session_name,
+            mux_session = display_name,
             pids = pids,
           }
           return true
@@ -159,7 +179,8 @@ function M:pane_id()
     return self.tmux_pane_id
   end
   if not self.external then
-    self:spawn({ "tmux", "list-panes", "-s", "-F", PANE_FORMAT, "-t", self.mux_session })
+    local session_name = self.mux_session and self.mux_session:match("^([^:]+)") or self.mux_session
+    self:spawn({ "tmux", "list-panes", "-s", "-F", PANE_FORMAT, "-t", session_name })
   end
   return self.tmux_pane_id
 end
