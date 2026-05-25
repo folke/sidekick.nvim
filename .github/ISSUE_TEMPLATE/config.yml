@@ -1,5 +1,5 @@
 blank_issues_enabled: false
 contact_links:
   - name: Ask a question
-    url: https://github.com/folke/sidekick.nvim/discussions
+    url: https://github.com/sternelee/sidekick.nvim/discussions
     about: Use Github discussions instead

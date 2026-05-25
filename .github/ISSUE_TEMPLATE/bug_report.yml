@@ -6,10 +6,10 @@ body:
   - type: markdown
     attributes:
       value: |
-        **Before** reporting an issue, make sure to read the [documentation](https://github.com/folke/sidekick.nvim)
-        and search [existing issues](https://github.com/folke/sidekick.nvim/issues).
+        **Before** reporting an issue, make sure to read the [documentation](https://github.com/sternelee/sidekick.nvim)
+        and search [existing issues](https://github.com/sternelee/sidekick.nvim/issues).
 
-        Usage questions such as ***"How do I...?"*** belong in [Discussions](https://github.com/folke/sidekick.nvim/discussions) and will be closed.
+        Usage questions such as ***"How do I...?"*** belong in [Discussions](https://github.com/sternelee/sidekick.nvim/discussions) and will be closed.
   - type: checkboxes
     attributes:
       label: Did you check docs and existing issues?

@@ -100,7 +100,7 @@ local defaults = {
       dump = 2000,
     },
     --- Actual cli tool config is loaded from the runtime path `sk/cli/{tool}.lua` and merged with the config below.
-    --- For default configs, see https://github.com/folke/sidekick.nvim/tree/main/sk/cli
+    --- For default configs, see https://github.com/sternelee/sidekick.nvim/tree/main/sk/cli
     -- stylua: ignore
     ---@type table<string, sidekick.cli.Config|{}>
     tools = {
@@ -114,6 +114,7 @@ local defaults = {
       gemini   = {},
       grok     = {},
       opencode = {},
+      omp      = {},
       pi       = {},
       qwen     = {},
     },
