@@ -17,7 +17,7 @@ function P.action(cb) end
 
 ---@param picker? string
 function M.get(picker)
-  local pickers = picker and { picker } or { Config.cli.picker, "snacks", "telescope", "fzf-lua" }
+  local pickers = picker and { picker } or { Config.cli.picker, "snacks", "telescope", "fzf-lua", "mini.pick" }
   for _, name in ipairs(pickers) do
     ---@type boolean, sidekick.Picker
     local ok, mod = pcall(require, "sidekick.cli.picker." .. name)
