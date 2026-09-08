@@ -342,6 +342,7 @@ local defaults = {
       cursor   = {},
       gemini   = {},
       grok     = {},
+      kimi     = {},
       opencode = {},
       pi       = {},
       qwen     = {},
@@ -725,6 +726,7 @@ Sidekick preconfigures popular AI CLIs. Run `:checkhealth sidekick` to see which
 | [`cursor`](https://cursor.com/cli)                          | Cursor CLI agent     | See [Cursor docs](https://cursor.com/cli)                                                                              |
 | [`gemini`](https://github.com/google-gemini/gemini-cli)     | Google Gemini CLI    | See [repo](https://github.com/google-gemini/gemini-cli)                                                                |
 | [`grok`](https://github.com/superagent-ai/grok-cli)         | xAI Grok CLI         | See [repo](https://github.com/superagent-ai/grok-cli)                                                                  |
+| [`kimi`](https://github.com/MoonshotAI/kimi-code)           | Moonshot Kimi CLI    | `npm install -g @moonshot-ai/kimi-code`                                                                                |
 | [`opencode`](https://github.com/sst/opencode)               | OpenCode CLI         | `npm install -g opencode`                                                                                              |
 | [`qwen`](https://github.com/QwenLM/qwen-code)               | Alibaba Qwen Code    | See [repo](https://github.com/QwenLM/qwen-code)                                                                        |
 

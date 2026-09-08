@@ -113,6 +113,7 @@ local defaults = {
       cursor   = {},
       gemini   = {},
       grok     = {},
+      kimi     = {},
       opencode = {},
       pi       = {},
       qwen     = {},
