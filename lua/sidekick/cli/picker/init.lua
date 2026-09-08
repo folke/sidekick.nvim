@@ -31,6 +31,19 @@ function M.get(picker)
   Util.error("No valid picker found")
 end
 
+---@param item table
+---@return boolean
+local function is_gh_item(item)
+  return item ~= nil and item.type ~= nil and item.repo ~= nil and item.number ~= nil
+end
+
+---@param item table
+---@return string
+local function gh_ref(item)
+  -- GitHub's standard cross-repo autolink format (owner/repo#number).
+  return string.format("%s#%d", item.repo, item.number)
+end
+
 ---@param opts? sidekick.context.loc.Opts|sidekick.cli.Send
 function M._send_cb(opts)
   opts = opts or {}
@@ -39,10 +52,15 @@ function M._send_cb(opts)
     local Loc = require("sidekick.cli.context.location")
     local ret = { { " " } } ---@type sidekick.Text
     for _, item in ipairs(items) do
-      local file = Loc.get(item, { kind = opts.kind or "file" })[1]
-      if file then
-        vim.list_extend(ret, file)
-        ret[#ret + 1] = { " " }
+      if is_gh_item(item) then
+        ret[#ret + 1] = { gh_ref(item) }
+        ret[#ret + 1] = { "\n" }
+      else
+        local file = Loc.get(item, { kind = opts.kind or "file" })[1]
+        if file then
+          vim.list_extend(ret, file)
+          ret[#ret + 1] = { " " }
+        end
       end
     end
     vim.schedule(function()
