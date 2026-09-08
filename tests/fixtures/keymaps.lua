@@ -33,6 +33,14 @@ local keymaps = {
     ["dd"] = "Delete the current line (vi normal mode)",
     ["u"] = "Undo last change (vi normal mode)",
   },
+  antigravity = {
+    ["<Esc>"] = "Close any open dialog or suggestion popup",
+    ["<C-c>"] = "Cancel the ongoing request or generation",
+    ["<C-d>"] = "Exit the Antigravity CLI",
+    ["\\<CR>"] = "Insert a newline in the prompt without sending",
+    ["<Up>"] = "Cycle to previous input in history",
+    ["<Down>"] = "Cycle to next input in history",
+  },
   claude = {
     ["<Esc><Esc>"] = "Rewind the code and conversation to a previous checkpoint",
     ["<Tab>"] = "Toggle extended thinking mode On/Off",

@@ -104,18 +104,19 @@ local defaults = {
     -- stylua: ignore
     ---@type table<string, sidekick.cli.Config|{}>
     tools = {
-      aider    = {},
-      amazon_q = {},
-      claude   = {},
-      codex    = {},
-      copilot  = {},
-      crush    = {},
-      cursor   = {},
-      gemini   = {},
-      grok     = {},
-      opencode = {},
-      pi       = {},
-      qwen     = {},
+      aider       = {},
+      amazon_q    = {},
+      antigravity = {},
+      claude      = {},
+      codex       = {},
+      copilot     = {},
+      crush       = {},
+      cursor      = {},
+      gemini      = {},
+      grok        = {},
+      opencode    = {},
+      pi          = {},
+      qwen        = {},
     },
     --- Add custom context. See `lua/sidekick/context/init.lua`
     ---@type table<string, sidekick.context.Fn>
