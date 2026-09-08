@@ -44,12 +44,32 @@ function M:start()
   elseif Config.cli.mux.create == "split" then
     local cmd = { "tmux", "split-window", "-dP", "-c", self.cwd, "-F", PANE_FORMAT }
     cmd[#cmd + 1] = Config.cli.mux.split.vertical and "-h" or "-v"
+    if Config.cli.mux.split.before then
+      cmd[#cmd + 1] = "-b"
+    end
     local size = Config.cli.mux.split.size
     vim.list_extend(cmd, { "-l", tostring(size <= 1 and ((size * 100) .. "%") or size) })
     self:add_cmd(cmd)
     self:spawn(cmd)
+    if Config.cli.mux.split.close_on_exit then
+      self:close_on_exit()
+    end
     Util.info(("Started **%s** in a new tmux split"):format(self.tool.name))
   end
+end
+
+--- Kill the tmux pane when Neovim exits.
+function M:close_on_exit()
+  local pane_id = self.tmux_pane_id
+  if not pane_id then
+    return
+  end
+  vim.api.nvim_create_autocmd("VimLeavePre", {
+    once = true,
+    callback = function()
+      pcall(Util.exec, { "tmux", "kill-pane", "-t", pane_id }, { notify = false })
+    end,
+  })
 end
 
 --- Execute the given tmux command and update the session info,
