@@ -143,7 +143,7 @@ local defaults = {
       class           = "{class}",
     },
     -- preferred picker for selecting files
-    ---@alias sidekick.picker "snacks"|"telescope"|"fzf-lua"
+    ---@alias sidekick.picker "snacks"|"telescope"|"fzf-lua"|"mini.pick"
     picker = "snacks", ---@type sidekick.picker
   },
   copilot = {
