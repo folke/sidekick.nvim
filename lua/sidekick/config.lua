@@ -34,7 +34,13 @@ local defaults = {
   cli = {
     watch = true, -- notify Neovim of file changes done by AI CLI tools
     ---@class sidekick.win.Opts
+    ---@field csiu? boolean Forward modified keys (e.g. `<S-CR>`) to the agent as CSI-u
     win = {
+      -- When enabled, sidekick injects default CSI-u keymaps (see `lua/sidekick/cli/csiu.lua`)
+      -- so modified special keys reach the agent instead of being collapsed by Neovim.
+      -- With the tmux backend, the options required to pass CSI-u through
+      -- (`extended-keys`, `extended-keys-format`) are applied automatically.
+      csiu = false,
       --- This is run when a new terminal is created, before starting it.
       --- Here you can change window options `terminal.opts`.
       ---@param terminal sidekick.cli.Terminal
@@ -185,6 +191,12 @@ end
 ---@param opts? sidekick.Config
 function M.setup(opts)
   config = vim.tbl_deep_extend("force", {}, vim.deepcopy(defaults), opts or {})
+
+  -- When `cli.win.csiu` is on, inject the default CSI-u keymaps into `cli.win.keys`.
+  -- User keys (and `= false` to disable) still win, since they're merged on top.
+  if config.cli.win.csiu then
+    config.cli.win.keys = vim.tbl_extend("force", require("sidekick.cli.csiu").defaults(), config.cli.win.keys)
+  end
 
   vim.api.nvim_create_user_command("Sidekick", function(args)
     require("sidekick.commands").cmd(args)

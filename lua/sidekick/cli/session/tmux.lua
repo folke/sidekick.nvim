@@ -35,6 +35,7 @@ function M:start()
     self:add_cmd(cmd)
     vim.list_extend(cmd, { ";", "set-option", "status", "off" })
     vim.list_extend(cmd, { ";", "set-option", "detach-on-destroy", "on" })
+    vim.list_extend(cmd, M.options())
     return { cmd = cmd }
   elseif Config.cli.mux.create == "window" then
     local cmd = { "tmux", "new-window", "-dP", "-c", self.cwd, "-F", PANE_FORMAT }
@@ -80,6 +81,19 @@ function M:add_cmd(ret)
     end
   end
   vim.list_extend(ret, self.tool.cmd)
+end
+
+--- Build `; set-option <name> <value>` segments for the mux session.
+--- When `opts.cli.win.csiu` is on, the tmux options required to pass CSI-u
+--- through (`extended-keys`, `extended-keys-format`) are added automatically.
+---@return string[]
+function M.options()
+  local ret = {} ---@type string[]
+  if Config.cli.win.csiu then
+    vim.list_extend(ret, { ";", "set-option", "extended-keys", "on" })
+    vim.list_extend(ret, { ";", "set-option", "extended-keys-format", "csi-u" })
+  end
+  return ret
 end
 
 ---@param opts? { cmd?:string[], notify?:boolean }
