@@ -3,12 +3,13 @@ local Util = require("sidekick.util")
 
 ---@class sidekick.cli.muxer.Tmux: sidekick.cli.Session
 ---@field tmux_pane_id string
+---@field tmux_window_id string
 ---@field tmux_pid number
 local M = {}
 M.__index = M
 
 local PANE_FORMAT =
-  "#{session_id}:#{pane_id}:#{pane_pid}:#{session_name}:#{?pane_current_path,#{pane_current_path},#{pane_start_path}}"
+  "#{session_id}:#{pane_id}:#{window_id}:#{pane_pid}:#{session_name}:#{?pane_current_path,#{pane_current_path},#{pane_start_path}}"
 
 ---@return sidekick.cli.terminal.Cmd?
 function M:attach()
@@ -60,6 +61,7 @@ function M:spawn(cmd)
   if pane then
     self.id = pane.skid
     self.tmux_pane_id = pane.id
+    self.tmux_window_id = pane.window_id
     self.mux_session = pane.session_name
     self.tmux_pid = pane.pid
     self.started = true
@@ -90,14 +92,15 @@ function M.panes(opts)
   local lines = Util.exec(cmd, { notify = opts.notify == true })
   local panes = {} ---@type sidekick.tmux.Pane[]
   for _, line in ipairs(lines or {}) do
-    local session_id, id, pid, session_name, cwd = line:match("^(%$%d+):(%%%d+):(%d+):(.-):(.*)$")
-    if id and pid and session_name and cwd then
+    local session_id, id, window_id, pid, session_name, cwd = line:match("^(%$%d+):(%%%d+):(@%d+):(%d+):(.-):(.*)$")
+    if id and window_id and pid and session_name and cwd then
       pid = assert(tonumber(pid), "invalid tmux pane_pid: " .. pid) --[[@as number]]
       ---@class sidekick.tmux.Pane
       panes[#panes + 1] = {
         skid = ("tmux %s"):format(pid), -- unique id for the pane
         pid = pid, -- process id of the pane
         id = id, -- tmux pane id
+        window_id = window_id, -- tmux window id
         session_name = session_name,
         session_id = session_id,
         cwd = cwd,
@@ -141,6 +144,7 @@ function M.sessions()
             cwd = proc.cwd or pane.cwd,
             tool = tool,
             tmux_pane_id = pane.id,
+            tmux_window_id = pane.window_id,
             tmux_pid = pane.pid,
             mux_session = pane.session_name,
             pids = pids,
@@ -162,6 +166,24 @@ function M:pane_id()
     self:spawn({ "tmux", "list-panes", "-s", "-F", PANE_FORMAT, "-t", self.mux_session })
   end
   return self.tmux_pane_id
+end
+
+function M:focus()
+  local pane_id = self:pane_id()
+  if not pane_id then
+    return
+  end
+
+  local window_id = self.tmux_window_id or pane_id
+  Util.exec({ "tmux", "select-window", "-t", window_id })
+  Util.exec({ "tmux", "select-pane", "-t", pane_id })
+  if vim.env.TMUX and self.mux_session then
+    Util.exec({ "tmux", "switch-client", "-t", self.mux_session })
+  end
+end
+
+function M:toggle()
+  return self:focus()
 end
 
 ---Send text to a tmux pane

@@ -101,6 +101,9 @@ function M.toggle(opts)
   opts = filter_opts(opts)
   State.with(function(state, attached)
     if not state.terminal then
+      if state.session and state.session.toggle then
+        state.session:toggle()
+      end
       return
     end
     if not attached then
