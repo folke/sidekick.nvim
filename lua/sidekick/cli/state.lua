@@ -19,6 +19,7 @@ local M = {}
 ---@field cwd? boolean
 ---@field external? boolean
 ---@field installed? boolean
+---@field kind? "session" | "tool"
 ---@field name? string
 ---@field session? string
 ---@field started? boolean
@@ -39,6 +40,7 @@ function M.is(t, filter)
     and (filter.cwd == nil or (t.session and t.session.cwd == Session.cwd()))
     and (filter.external == nil or filter.external == t.external)
     and (filter.installed == nil or filter.installed == t.installed)
+    and (filter.kind == nil or (filter.kind == "session" and t.session ~= nil) or (filter.kind == "tool" and t.session == nil))
     and (filter.name == nil or filter.name == t.tool.name)
     and (filter.session == nil or (t.session and t.session.id == filter.session))
     and (filter.started == nil or filter.started == t.started)
