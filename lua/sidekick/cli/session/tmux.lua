@@ -44,12 +44,96 @@ function M:start()
   elseif Config.cli.mux.create == "split" then
     local cmd = { "tmux", "split-window", "-dP", "-c", self.cwd, "-F", PANE_FORMAT }
     cmd[#cmd + 1] = Config.cli.mux.split.vertical and "-h" or "-v"
+    if Config.cli.mux.split.before then
+      cmd[#cmd + 1] = "-b"
+    end
     local size = Config.cli.mux.split.size
     vim.list_extend(cmd, { "-l", tostring(size <= 1 and ((size * 100) .. "%") or size) })
     self:add_cmd(cmd)
     self:spawn(cmd)
+    if Config.cli.mux.split.close_on_exit then
+      self:close_on_exit()
+    end
     Util.info(("Started **%s** in a new tmux split"):format(self.tool.name))
   end
+end
+
+--- Whether the split pane currently lives in Neovim's tmux window.
+--- Hidden panes are broken out into a separate (background) window.
+---@return boolean
+function M:is_open()
+  if Config.cli.mux.create ~= "split" then
+    return true
+  end
+  local pane = self:pane_id()
+  local nvim_pane = vim.env.TMUX_PANE
+  if not pane or not nvim_pane then
+    return true
+  end
+  local windows = {} ---@type table<string, string>
+  local lines = Util.exec({ "tmux", "list-panes", "-a", "-F", "#{pane_id} #{window_id}" }, { notify = false })
+  for _, line in ipairs(lines or {}) do
+    local p, w = line:match("^(%%%d+) (@%d+)$")
+    if p then
+      windows[p] = w
+    end
+  end
+  return windows[pane] ~= nil and windows[pane] == windows[nvim_pane]
+end
+
+--- Hide the split by breaking its pane into a detached background window.
+function M:hide()
+  if Config.cli.mux.create ~= "split" then
+    return
+  end
+  local pane = self:pane_id()
+  if pane then
+    Util.exec({ "tmux", "break-pane", "-d", "-s", pane }, { notify = false })
+  end
+end
+
+--- Show the split by joining its pane back next to Neovim.
+function M:show()
+  if Config.cli.mux.create ~= "split" then
+    return
+  end
+  local pane = self:pane_id()
+  local nvim_pane = vim.env.TMUX_PANE
+  if not pane or not nvim_pane then
+    return
+  end
+  local cmd = { "tmux", "join-pane", "-s", pane, "-t", nvim_pane }
+  cmd[#cmd + 1] = Config.cli.mux.split.vertical and "-h" or "-v"
+  if Config.cli.mux.split.before then
+    cmd[#cmd + 1] = "-b"
+  end
+  local size = Config.cli.mux.split.size
+  vim.list_extend(cmd, { "-l", tostring(size <= 1 and ((size * 100) .. "%") or size) })
+  Util.exec(cmd, { notify = false })
+  -- keep focus on Neovim, matching the detached (`-d`) behavior of a fresh split
+  Util.exec({ "tmux", "select-pane", "-t", nvim_pane }, { notify = false })
+end
+
+--- Close the split/window by killing its tmux pane.
+function M:close()
+  local pane = self.tmux_pane_id
+  if pane then
+    Util.exec({ "tmux", "kill-pane", "-t", pane }, { notify = false })
+  end
+end
+
+--- Kill the tmux pane when Neovim exits.
+function M:close_on_exit()
+  local pane_id = self.tmux_pane_id
+  if not pane_id then
+    return
+  end
+  vim.api.nvim_create_autocmd("VimLeavePre", {
+    once = true,
+    callback = function()
+      pcall(Util.exec, { "tmux", "kill-pane", "-t", pane_id }, { notify = false })
+    end,
+  })
 end
 
 --- Execute the given tmux command and update the session info,
