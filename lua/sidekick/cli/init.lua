@@ -194,7 +194,22 @@ function M.send(opts)
       msg = state.tool:format(text)
       state.session:send(msg .. "\n")
       if opts.submit then
-        state.session:submit()
+        -- Poll until send queue is empty, then submit
+        local max_attempts = 50 -- 5 second timeout
+        local attempts = 0
+        local function try_submit()
+          attempts = attempts + 1
+          if state.session.send_queue and #state.session.send_queue > 0 then
+            if attempts < max_attempts then
+              vim.defer_fn(try_submit, 100)
+            else
+              require("sidekick.util").warn("Submit timeout: send queue not empty after 5s")
+            end
+          else
+            state.session:submit()
+          end
+        end
+        vim.defer_fn(try_submit, 100)
       end
     end)
   end, {
