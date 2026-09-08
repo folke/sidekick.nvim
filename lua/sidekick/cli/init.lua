@@ -21,6 +21,8 @@ local M = {}
 ---@field mux_focus? boolean wether the tool needs to be focused in order to receive input
 ---@field format? fun(text:sidekick.Text[], str:string):string?
 ---@field native_scroll? boolean whether the tool handles scrolling natively
+---@field resume? string[] Resume arguments (e.g., {"-r"} for claude, {"-s"} for opencode)
+---@field discover_sessions? fun(cwd: string, limit: number): sidekick.cli.session.Info[] Discover sessions for this CLI
 
 ---@class sidekick.cli.Show
 ---@field name? string
@@ -80,6 +82,25 @@ function M.select(opts)
       end
     end
   require("sidekick.cli.ui.select").select(opts)
+end
+
+--- Select and resume a CLI session
+---@param opts? sidekick.cli.SelectSession|{cb:nil}|{focus?:boolean, show?:boolean}
+---@overload fun(cb:fun(session?: sidekick.cli.session.Info))
+function M.select_session(opts)
+  opts = opts or {}
+  opts = type(opts) == "function" and { cb = opts } or opts --[[@as sidekick.cli.SelectSession]]
+  if not opts.cb then
+    opts.cb = function(session)
+      if session then
+        require("sidekick.cli.sessions").resume_session(session, {
+          show = opts.show ~= false,
+          focus = opts.focus ~= false,
+        })
+      end
+    end
+  end
+  require("sidekick.cli.ui.sessions").select(opts)
 end
 
 ---@param opts? sidekick.cli.Show

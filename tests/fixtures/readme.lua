@@ -68,6 +68,11 @@ local base = {
       mode = { "n", "x" },
       desc = "Sidekick Select Prompt",
     },
+    {
+      "<leader>ar",
+      function() require("sidekick.cli").select_session() end,
+      desc = "Resume CLI Session",
+    },
     -- Example of a keybinding to open Claude directly
     {
       "<leader>ac",
