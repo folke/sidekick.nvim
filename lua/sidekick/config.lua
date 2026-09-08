@@ -51,8 +51,8 @@ local defaults = {
       -- Options used when layout is "left"|"bottom"|"top"|"right"
       ---@type vim.api.keyset.win_config
       split = {
-        width = 80, -- set to 0 for default split width
-        height = 20, -- set to 0 for default split height
+        width = 80, -- fixed width for the split. Set to 0 for a regular split that resizes with your layout
+        height = 20, -- fixed height for the split. Set to 0 for a regular split that resizes with your layout
       },
       --- CLI Tool Keymaps (default mode is `t`)
       ---@type table<string, sidekick.cli.Keymap|false>

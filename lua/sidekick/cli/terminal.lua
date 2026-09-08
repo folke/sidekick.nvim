@@ -49,6 +49,7 @@ local wo = {
   cursorcolumn = false,
   cursorline = false,
   fillchars = "eob: ",
+  foldcolumn = "0",
   list = false,
   listchars = "tab:  ",
   number = false,
@@ -72,7 +73,6 @@ local win_opts = {
   float = {
     focusable = true,
     relative = "editor",
-    style = "minimal",
     row = 0.5,
     col = 0.5,
     title = " Sidekick ",
@@ -81,7 +81,6 @@ local win_opts = {
   ---@type vim.api.keyset.win_config
   split = {
     win = -1,
-    style = "minimal",
   },
 }
 
@@ -213,6 +212,13 @@ function M:start()
     callback = fix_cursorline,
   })
 
+  vim.api.nvim_create_autocmd("BufWinEnter", {
+    group = self.group,
+    callback = function()
+      self:release_win()
+    end,
+  })
+
   local norm_cmd = vim.deepcopy(self.tool.cmd) ---@type string|string[]
   if vim.fn.has("win32") == 1 then
     local cmd1 = vim.fn.exepath(norm_cmd[1])
@@ -322,7 +328,30 @@ function M:fix_cursorline()
   if not self:win_valid() then
     return
   end
+  local wbuf = vim.api.nvim_win_get_buf(self.win)
+  if wbuf ~= self.buf and not (self.scrollback and wbuf == self.scrollback.buf) then
+    return -- another buffer took over the window
+  end
   self:wo({ cursorline = vim.fn.mode() ~= "t" and vim.api.nvim_get_current_win() == self.win })
+end
+
+--- Release the window when another buffer is shown in it (e.g. `:edit file`),
+--- so the user keeps the window and hiding the terminal won't close it.
+function M:release_win()
+  if not self:win_valid() then
+    return
+  end
+  local wbuf = vim.api.nvim_win_get_buf(self.win)
+  if wbuf == self.buf or (self.scrollback and wbuf == self.scrollback.buf) then
+    return
+  end
+  -- winfix{width,height} sticks to the window, so undo it explicitly.
+  -- All other window options are buffer-local and restored by Neovim itself.
+  vim.wo[self.win].winfixwidth = false
+  vim.wo[self.win].winfixheight = false
+  vim.w[self.win].sidekick_cli = nil
+  vim.w[self.win].sidekick_session_id = nil
+  self.win = nil
 end
 
 function M:on_ready()
@@ -377,9 +406,10 @@ function M:open_win()
 
   self.win = vim.api.nvim_open_win(self.buf, false, opts)
 
-  if opts.vertical then
+  -- pin the window size, but only when an explicit size was configured (0 = auto)
+  if opts.vertical and opts.height then
     vim.wo[self.win].winfixheight = true
-  else
+  elseif not opts.vertical and opts.width then
     vim.wo[self.win].winfixwidth = true
   end
   vim.w[self.win].sidekick_cli = self.tool

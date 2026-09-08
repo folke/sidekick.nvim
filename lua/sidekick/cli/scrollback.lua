@@ -127,6 +127,7 @@ function M:open(win_pos)
   terminal:bo(self.buf)
   vim.bo[self.buf].bufhidden = "wipe"
   vim.api.nvim_win_set_buf(terminal.win, self.buf)
+  terminal:wo()
 
   local term = vim.api.nvim_open_term(self.buf, {})
   terminal:keys(self.buf)
