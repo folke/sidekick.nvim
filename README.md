@@ -32,11 +32,12 @@ without leaving your editor.
 
 - **Neovim** `>= 0.11.2` or newer
 - The official [copilot-language-server](https://github.com/github/copilot-language-server-release) LSP server,
-  enabled with `vim.lsp.enable`. Can be installed in multiple ways:
+  enabled with `vim.lsp.enable` **_(optional, required for NES)_**.
+  Can be installed in multiple ways:
   1. install using `npm` or your OS's package manager
   2. install with [mason-lspconfig.nvim](https://github.com/mason-org/mason-lspconfig.nvim)
   3. [copilot.lua](https://github.com/zbirenbaum/copilot.lua) and [copilot.vim](https://github.com/github/copilot.vim)
-     both bundle the LSP Server in their plugin.
+     both bundle the LSP Server in their plugin **_(optional, required for NES)_**.
 - A working `lsp/copilot.lua` configuration.
   - **TIP:** Included in [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig)
 - [snacks.nvim](https://github.com/folke/snacks.nvim) for better prompt/tool selection **_(optional)_**
