@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.4.0](https://github.com/folke/sidekick.nvim/compare/v2.3.0...v2.4.0) (2026-03-24)
+
+
+### Features
+
+* **context:** added source & code to diagnoistics context ([8ad0ede](https://github.com/folke/sidekick.nvim/commit/8ad0ede3ff9065878a853e4b037ba6ac88231fb0))
+
+
+### Bug Fixes
+
+* **scrollback:** keep terminal in normal mode when scrolling it from another window ([17447a0](https://github.com/folke/sidekick.nvim/commit/17447a05f9385e5f8372b61530f6f9329cb82421))
+
 ## [2.3.0](https://github.com/folke/sidekick.nvim/compare/v2.2.0...v2.3.0) (2026-03-20)
 
 
