@@ -52,6 +52,18 @@ function B:attach() end
 --- Detach from an existing session
 function B:detach() end
 
+--- Focus the session
+function B:focus() end
+
+--- Whether the session currently has user focus
+---@return boolean
+function B:is_focused()
+  return false
+end
+
+--- Move focus away from the session
+function B:blur() end
+
 --- Start a new session
 --- If the backend returns a Cmd, a new terminal session will be spawned
 ---@return sidekick.cli.terminal.Cmd?

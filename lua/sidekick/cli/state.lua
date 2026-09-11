@@ -187,14 +187,14 @@ function M.attach(state, opts)
 
   state = M.get_state(session) -- update state
   local terminal = state.terminal
-  if terminal then
-    if opts.show then
-      terminal:show()
-      if opts.focus ~= false and terminal:is_running() then
-        terminal:focus()
-      end
-    end
-  elseif attached then
+  if terminal and opts.show then
+    terminal:show()
+  end
+  local visible = state.external or (terminal and terminal:is_running())
+  if opts.show and opts.focus ~= false and visible then
+    session:focus()
+  end
+  if not terminal and attached then
     Util.info("Attached to `" .. state.tool.name .. "`")
   end
   return state, attached

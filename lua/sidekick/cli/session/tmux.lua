@@ -196,4 +196,47 @@ function M:dump()
   return ret
 end
 
+---Focus the tmux pane
+function M:focus()
+  local pane_id = self:pane_id()
+  if not pane_id then
+    return
+  end
+  -- select-window first so create="window" switches the client to the pane's window;
+  -- no-op for create="split" where the pane is already in the current window.
+  Util.exec({ "tmux", "select-window", "-t", pane_id })
+  Util.exec({ "tmux", "select-pane", "-t", pane_id })
+end
+
+---Whether this tmux pane is the active pane of the calling client
+---@return boolean
+function M:is_focused()
+  local pane_id = self:pane_id()
+  if not pane_id then
+    return false
+  end
+  local lines = Util.exec({
+    "tmux",
+    "display-message",
+    "-p",
+    "-t",
+    pane_id,
+    "#{==:#{client_active_pane},#{pane_id}}",
+  }, { notify = false })
+  return lines ~= nil and lines[1] == "1"
+end
+
+---Send focus back to the editor pane (identified via $TMUX_PANE)
+function M:blur()
+  if not self:is_focused() then
+    return
+  end
+  local editor_pane = vim.env.TMUX_PANE
+  if not editor_pane then
+    return
+  end
+  Util.exec({ "tmux", "select-window", "-t", editor_pane }, { notify = false })
+  Util.exec({ "tmux", "select-pane", "-t", editor_pane }, { notify = false })
+end
+
 return M
