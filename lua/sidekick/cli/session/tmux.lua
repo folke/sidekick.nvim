@@ -89,9 +89,11 @@ function M.panes(opts)
   local cmd = opts.cmd or { "tmux", "list-panes", "-a", "-F", PANE_FORMAT }
   local lines = Util.exec(cmd, { notify = opts.notify == true })
   local panes = {} ---@type sidekick.tmux.Pane[]
+  local seen = {} ---@type table<string,boolean>
   for _, line in ipairs(lines or {}) do
     local session_id, id, pid, session_name, cwd = line:match("^(%$%d+):(%%%d+):(%d+):(.-):(.*)$")
-    if id and pid and session_name and cwd then
+    if id and pid and session_name and cwd and not seen[id] then
+      seen[id] = true
       pid = assert(tonumber(pid), "invalid tmux pane_pid: " .. pid) --[[@as number]]
       ---@class sidekick.tmux.Pane
       panes[#panes + 1] = {
