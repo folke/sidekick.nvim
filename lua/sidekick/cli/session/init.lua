@@ -104,7 +104,7 @@ end
 function M.sid(opts)
   local tool = assert(opts and opts.tool, "missing tool")
   local cwd = M.cwd(opts)
-  return ("%s-%s"):format(tool, vim.fn.sha256(cwd):sub(1, 16 - #tool))
+  return ("%s %s"):format(tool, vim.fn.sha256(cwd):sub(1, 16 - #tool))
 end
 
 ---@param name string
