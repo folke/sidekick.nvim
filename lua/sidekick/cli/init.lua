@@ -1,3 +1,4 @@
+local Config = require("sidekick.config")
 local Context = require("sidekick.cli.context")
 local State = require("sidekick.cli.state")
 local Util = require("sidekick.util")
@@ -35,6 +36,7 @@ local M = {}
 
 ---@class sidekick.cli.Send: sidekick.cli.Show,sidekick.cli.Message
 ---@field submit? boolean
+---@field attach? boolean
 
 --- Keymap options similar to `vim.keymap.set` and `lazy.nvim` mappings
 ---@class sidekick.cli.Keymap: vim.keymap.set.Opts
@@ -80,6 +82,30 @@ function M.select(opts)
       end
     end
   require("sidekick.cli.ui.select").select(opts)
+end
+
+--- Start a new CLI tool session without searching for remote sessions
+---@param opts? {name?: string, focus?: boolean, backend?: string}
+---@overload fun(name: string)
+function M.new(opts)
+  opts = type(opts) == "string" and { name = opts } or opts or {}
+  local name = opts.name or "claude"
+  local tool = Config.get_tool(name)
+  if not tool then
+    Util.error(("Unknown tool: %s"):format(name))
+    return
+  end
+  if vim.fn.executable(tool.cmd[1]) ~= 1 then
+    require("sidekick.cli.ui.select").on_missing(tool)
+    return
+  end
+  local Session = require("sidekick.cli.session")
+  Session.setup() -- ensure backends are registered
+  local session = Session.new({ tool = name, backend = opts.backend })
+  session = Session.attach(session)
+  local state = State.get_state(session)
+  State.attach(state, { show = true, focus = opts.focus })
+  return state
 end
 
 ---@param opts? sidekick.cli.Show
@@ -137,6 +163,36 @@ function M.focus(opts)
   })
 end
 
+--- Select a prompt to send, creating a new session if not attached
+---@param opts? sidekick.Prompt|{cb:nil, name?:string, focus?:boolean}
+---@overload fun(cb:fun(msg?:string))
+function M.my_prompt(opts)
+  opts = opts or {}
+  opts = type(opts) == "function" and { cb = opts } or opts
+
+  -- Check if there's an attached session
+  local filter = { attached = true }
+  if opts.name then
+    filter.name = opts.name
+  end
+  local attached = State.get(filter)
+
+  if #attached == 0 then
+    -- No attached session, create a new one
+    local state = M.new({ name = opts.name or "claude", focus = opts.focus })
+    if not state then
+      return
+    end
+    -- Delay showing the prompt to allow the session to initialize
+    vim.defer_fn(function()
+      M.prompt(opts)
+    end, 500)
+  else
+    -- Already attached, show prompt immediately
+    M.prompt(opts)
+  end
+end
+
 ---@param opts? sidekick.cli.Hide
 ---@overload fun(name: string)
 function M.hide(opts)
@@ -163,6 +219,33 @@ end
 ---@param opts? sidekick.cli.Message|string
 function M.render(opts)
   return Context.get():render(opts or "")
+end
+
+--- Send a message, creating a new session if not attached
+---@param opts? sidekick.cli.Send
+---@overload fun(msg:string)
+function M.my_send(opts)
+  opts = type(opts) == "string" and { msg = opts } or opts
+  opts = filter_opts(opts)
+
+  -- Check if there's an attached session
+  local filter_attached = Util.merge(opts.filter, { attached = true })
+  local attached = State.get(filter_attached)
+
+  if #attached == 0 then
+    -- No attached session, create a new one
+    local state = M.new({ name = opts.filter.name or "claude", focus = opts.focus })
+    if not state then
+      return
+    end
+    -- Delay sending the message to allow Claude to initialize
+    vim.defer_fn(function()
+      M.send(opts)
+    end, 2000)
+  else
+    -- Already attached, send immediately
+    M.send(opts)
+  end
 end
 
 --- Send a message or prompt to a CLI
