@@ -165,6 +165,19 @@ function M.deprecate(deprecated, replacement)
   M.warn(("`%s` is deprecated.\nPlease use `%s` instead."):format(deprecated, replacement))
 end
 
+--- Quote a single command-line argument for use in a `cmd.exe` command string,
+--- e.g. when joining a `string[]` command into a single string for `jobstart`.
+---@param arg string
+function M.win_quote(arg)
+  if arg == "" then
+    return '""'
+  end
+  if not arg:find('[ \t"]') then
+    return arg
+  end
+  return '"' .. arg:gsub('"', '\\"') .. '"'
+end
+
 ---@param cmd string[]
 ---@param opts? vim.SystemOpts|{notify?:boolean}
 function M.exec(cmd, opts)
