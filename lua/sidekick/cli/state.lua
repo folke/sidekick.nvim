@@ -194,6 +194,8 @@ function M.attach(state, opts)
         terminal:focus()
       end
     end
+  elseif state.session and state.session.focus and opts.focus ~= false then
+    state.session:focus()
   elseif attached then
     Util.info("Attached to `" .. state.tool.name .. "`")
   end
