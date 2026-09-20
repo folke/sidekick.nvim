@@ -130,7 +130,8 @@ function P:update()
 
   local cmd = { "ps" }
   if (vim.env.USER or "") ~= "" then
-    vim.list_extend(cmd, { "-u", vim.env.USER or "" })
+    local user_flag = (vim.uv.os_uname().sysname == "FreeBSD") and "-U" or "-u"
+    vim.list_extend(cmd, { user_flag, vim.env.USER or "" })
   end
   vim.list_extend(cmd, { "-ww", "-o", "pid,ppid,args" })
   local lines = Util.exec(cmd)
