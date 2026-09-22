@@ -99,6 +99,9 @@ local defaults = {
       -- more lines means slower loading of the scrollback
       dump = 2000,
     },
+    -- Send absolute file paths to CLI tools instead of paths relative to Neovim's cwd.
+    -- Useful when the agent runs from a different working directory (e.g. a parent).
+    absolute_paths = false,
     --- Actual cli tool config is loaded from the runtime path `sk/cli/{tool}.lua` and merged with the config below.
     --- For default configs, see https://github.com/folke/sidekick.nvim/tree/main/sk/cli
     -- stylua: ignore

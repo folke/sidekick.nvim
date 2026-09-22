@@ -1,3 +1,5 @@
+local Config = require("sidekick.config")
+
 local M = {}
 
 ---@class sidekick.context.Loc
@@ -22,7 +24,7 @@ function M.get(ctx, opts)
   local name = ctx.name or vim.api.nvim_buf_get_name(ctx.buf)
   if not name or name == "" then
     name = "[No Name]"
-  else
+  elseif not Config.cli.absolute_paths then
     local cwd = ctx.cwd or vim.fn.getcwd(0)
     local ok, rel = pcall(vim.fs.relpath, cwd, name)
     if ok and rel and rel ~= "" and rel ~= "." then
