@@ -191,6 +191,9 @@ function M.attach(session)
     session:start()
   end
   M._attached[session.id] = session
+  if Config.cli.watch then
+    require("sidekick.cli.watch").enable()
+  end
   Util.emit("SidekickCliAttach", { id = session.id })
   return session
 end
