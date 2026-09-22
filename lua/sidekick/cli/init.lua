@@ -121,6 +121,10 @@ end
 function M.focus(opts)
   opts = filter_opts(opts)
   State.with(function(state)
+    if state.external and state.session and state.session.focus then
+      state.session:focus()
+      return
+    end
     if not state.terminal then
       return
     end
