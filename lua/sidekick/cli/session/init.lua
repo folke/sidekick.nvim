@@ -52,6 +52,9 @@ function B:attach() end
 --- Detach from an existing session
 function B:detach() end
 
+--- Focus an external session (tmux/zellij pane)
+function B:focus() end
+
 --- Start a new session
 --- If the backend returns a Cmd, a new terminal session will be spawned
 ---@return sidekick.cli.terminal.Cmd?
