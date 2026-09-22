@@ -75,10 +75,18 @@ function B.sessions()
   error("Backend:sessions() not implemented")
 end
 
----@param state sidekick.cli.session.Opts
+---@param state sidekick.cli.session.Opts|{mode?:sidekick.cli.Mode}
 function M.new(state)
   local tool = state.tool
   tool = type(tool) == "string" and Config.get_tool(tool) or tool --[[@as sidekick.cli.Tool]]
+  local mode = state.mode --[[@as sidekick.cli.Mode?]]
+  if mode and mode ~= "new" then
+    local extra = tool.config[mode]
+    if extra and #extra > 0 then
+      local cmd = vim.list_extend(vim.deepcopy(tool.cmd), extra)
+      tool = tool:clone({ cmd = cmd })
+    end
+  end
   local backend = state.backend or (Config.cli.mux.enabled and Config.cli.mux.backend or "terminal")
   local super = assert(M.backends[backend], "unknown backend: " .. backend)
   local meta = getmetatable(state)

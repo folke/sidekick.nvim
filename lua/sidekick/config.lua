@@ -33,6 +33,10 @@ local defaults = {
   -- Work with AI cli tools directly from within Neovim
   cli = {
     watch = true, -- notify Neovim of file changes done by AI CLI tools
+    -- When starting a tool that supports resume/continue, pick how to start it:
+    -- "ask" (default): show a picker when the tool has `continue` or `resume` defined
+    -- "new" / "continue" / "resume": always start with that mode, no picker
+    resume = "ask", ---@type "ask"|"new"|"continue"|"resume"
     ---@class sidekick.win.Opts
     win = {
       --- This is run when a new terminal is created, before starting it.

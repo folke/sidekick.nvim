@@ -13,6 +13,7 @@ local M = {}
 ---@field session? sidekick.cli.Session
 ---@field started? boolean
 ---@field terminal? sidekick.cli.Terminal
+---@field mode? sidekick.cli.Mode
 
 ---@class sidekick.cli.Filter
 ---@field attached? boolean
@@ -30,6 +31,7 @@ local M = {}
 ---@field focus? boolean
 ---@field attach? boolean
 ---@field all? boolean
+---@field mode? sidekick.cli.Mode|false
 
 ---@param t sidekick.cli.State
 ---@param filter? sidekick.cli.Filter
@@ -137,6 +139,45 @@ function M.get(filter)
   return ret
 end
 
+---@param tool sidekick.cli.Tool
+---@param cb fun(mode?: sidekick.cli.Mode)
+---@param forced? sidekick.cli.Mode|false
+local function pick_mode(tool, cb, forced)
+  local has_continue = type(tool.config.continue) == "table" and #tool.config.continue > 0
+  local has_resume = type(tool.config.resume) == "table" and #tool.config.resume > 0
+  if not (has_continue or has_resume) then
+    return cb(nil)
+  end
+  local default = forced == nil and Config.cli.resume or forced
+  if default == false or default == "new" then
+    return cb(nil)
+  elseif default == "continue" and has_continue then
+    return cb("continue")
+  elseif default == "resume" and has_resume then
+    return cb("resume")
+  end
+  local choices = { "new" } ---@type sidekick.cli.Mode[]
+  if has_continue then
+    choices[#choices + 1] = "continue"
+  end
+  if has_resume then
+    choices[#choices + 1] = "resume"
+  end
+  local labels = {
+    new = "new session",
+    continue = "continue most recent session",
+    resume = "resume a session (pick in tool)",
+  }
+  vim.ui.select(choices, {
+    prompt = ("Start `%s`:"):format(tool.name),
+    format_item = function(m)
+      return labels[m]
+    end,
+  }, function(choice)
+    cb(choice)
+  end)
+end
+
 --- Executes a callback with one or more attached sessions.
 ---@param cb fun(state: sidekick.cli.State, attached?: boolean):any?
 ---@param opts? sidekick.cli.With
@@ -149,8 +190,18 @@ function M.with(cb, opts)
     if not state then
       return
     end
-    local ret, attached = M.attach(state, { show = opts.show, focus = opts.focus })
-    cb(ret, attached)
+    local function proceed()
+      local ret, attached = M.attach(state, { show = opts.show, focus = opts.focus })
+      cb(ret, attached)
+    end
+    if state.session == nil then
+      pick_mode(state.tool, function(mode)
+        state.mode = mode
+        proceed()
+      end, opts.mode)
+    else
+      proceed()
+    end
   end)
 
   local filter_attached = Util.merge(opts.filter, { attached = true })
@@ -182,7 +233,7 @@ function M.attach(state, opts)
   local tool = state.tool
 
   -- if the session is already attached, the below is a no-op
-  local session = state.session or Session.new({ tool = tool.name })
+  local session = state.session or Session.new({ tool = tool.name, mode = state.mode })
   session = Session.attach(session)
 
   state = M.get_state(session) -- update state

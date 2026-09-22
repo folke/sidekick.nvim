@@ -12,6 +12,8 @@ local M = {}
 ---@field prompt? string
 ---@field text? sidekick.Text[]
 
+---@alias sidekick.cli.Mode "new"|"continue"|"resume"
+
 ---@class sidekick.cli.Config
 ---@field cmd string[] Command to run the CLI tool
 ---@field env? table<string, string|false> Environment variables to set when running the command
@@ -21,12 +23,15 @@ local M = {}
 ---@field mux_focus? boolean wether the tool needs to be focused in order to receive input
 ---@field format? fun(text:sidekick.Text[], str:string):string?
 ---@field native_scroll? boolean whether the tool handles scrolling natively
+---@field continue? string[] Extra args appended to `cmd` to continue the most recent session
+---@field resume? string[] Extra args appended to `cmd` to resume a session (typically via the tool's own picker)
 
 ---@class sidekick.cli.Show
 ---@field name? string
 ---@field focus? boolean
 ---@field filter? sidekick.cli.Filter
 ---@field all? boolean
+---@field mode? sidekick.cli.Mode|false mode used when starting a new session (bypasses the picker)
 
 ---@class sidekick.cli.Hide
 ---@field name? string
@@ -91,6 +96,7 @@ function M.show(opts)
     attach = true,
     filter = opts.filter,
     focus = opts.focus,
+    mode = opts.mode,
     show = true,
   })
 end
@@ -112,6 +118,7 @@ function M.toggle(opts)
   end, {
     attach = true,
     filter = opts.filter,
+    mode = opts.mode,
   })
 end
 
