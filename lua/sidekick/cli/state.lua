@@ -206,6 +206,7 @@ function M.detach(state)
     if state.terminal then
       state.terminal:close()
     else
+      state.session:close()
       Session.detach(state.session)
       Util.info("Detached from `" .. state.tool.name .. "`")
     end

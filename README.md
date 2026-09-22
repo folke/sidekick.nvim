@@ -20,7 +20,7 @@ without leaving your editor.
   - 📦 **Pre-configured for Popular Tools**: Out-of-the-box support for Claude, Gemini, Grok, Codex, Copilot CLI, and more.
   - ✨ **Context-Aware Prompts**: Automatically include file content, cursor position, and diagnostics in your prompts.
   - 📝 **Prompt Library**: A library of pre-defined prompts for common tasks like explaining code, fixing issues, or writing tests.
-  - 🔄 **Session Persistence**: Keep your CLI sessions alive with `tmux` and `zellij` integration.
+  - 🔄 **Session Persistence**: Keep your CLI sessions alive with `tmux`, `zellij` and `herdr` integration.
   - 📂 **Automatic File Watching**: Automatically reloads files in Neovim when they are modified by AI tools.
 
 - **🔌 Extensible and Customizable**
@@ -315,18 +315,22 @@ local defaults = {
       nav = nil,
     },
     ---@class sidekick.cli.Mux
-    ---@field backend? "tmux"|"zellij" Multiplexer backend to persist CLI sessions
+    ---@field backend? "tmux"|"zellij"|"herdr" Multiplexer backend to persist CLI sessions
     mux = {
-      backend = vim.env.ZELLIJ and "zellij" or "tmux", -- default to tmux unless zellij is detected
+      -- default to the multiplexer Neovim runs in (zellij > tmux > herdr), falling back to tmux
+      backend = vim.env.ZELLIJ and "zellij" or vim.env.TMUX and "tmux" or vim.env.HERDR_ENV and "herdr" or "tmux",
       enabled = false,
       -- terminal: new sessions will be created for each CLI tool and shown in a Neovim terminal
       -- window: when run inside a terminal multiplexer, new sessions will be created in a new tab
       -- split: when run inside a terminal multiplexer, new sessions will be created in a new split
       -- NOTE: zellij only supports `terminal`
+      -- NOTE: herdr only supports `window` and `split`
       create = "terminal", ---@type "terminal"|"window"|"split"
       split = {
         vertical = true, -- vertical or horizontal split
+        before = false, -- place the split before the current pane (left when vertical, above when horizontal)
         size = 0.5, -- size of the split (0-1 for percentage)
+        close_on_exit = false, -- close the split when Neovim exits
       },
     },
     --- Actual cli tool config is loaded from the runtime path `sk/cli/{tool}.lua` and merged with the config below.
@@ -923,14 +927,14 @@ Use them together for the complete experience!
 
 ### Terminal sessions not persisting?
 
-Make sure you have tmux or zellij installed and enable the multiplexer:
+Make sure you have tmux, zellij or [herdr](https://herdr.dev) installed and enable the multiplexer:
 
 ```lua
 opts = {
   cli = {
     mux = {
       enabled = true,
-      backend = "tmux", -- or "zellij"
+      backend = "tmux", -- or "zellij" / "herdr"
     },
   },
 }

@@ -52,6 +52,22 @@ function B:attach() end
 --- Detach from an existing session
 function B:detach() end
 
+--- Whether the session is currently visible.
+--- Backends without a visibility concept are always considered open.
+---@return boolean
+function B:is_open()
+  return true
+end
+
+--- Hide the session from view without stopping it (optional hook)
+function B:hide() end
+
+--- Stop the session and remove its pane/window (optional hook)
+function B:close() end
+
+--- Bring a hidden session back into view (optional hook)
+function B:show() end
+
 --- Start a new session
 --- If the backend returns a Cmd, a new terminal session will be spawned
 ---@return sidekick.cli.terminal.Cmd?
@@ -121,7 +137,11 @@ function M.setup()
   end
   M.did_setup = true
   Config.tools() -- load tools, since they may register session backends
-  local session_backends = { tmux = "sidekick.cli.session.tmux", zellij = "sidekick.cli.session.zellij" }
+  local session_backends = {
+    tmux = "sidekick.cli.session.tmux",
+    zellij = "sidekick.cli.session.zellij",
+    herdr = "sidekick.cli.session.herdr",
+  }
   for name, mod in pairs(session_backends) do
     if vim.fn.executable(name) == 1 then
       M.register(name, require(mod))

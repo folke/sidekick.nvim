@@ -86,7 +86,11 @@ end
 ---@overload fun(name: string)
 function M.show(opts)
   opts = filter_opts(opts)
-  State.with(function() end, {
+  State.with(function(state)
+    if not state.terminal and state.session and not state.session:is_open() then
+      state.session:show()
+    end
+  end, {
     all = opts.all,
     attach = true,
     filter = opts.filter,
@@ -100,14 +104,22 @@ end
 function M.toggle(opts)
   opts = filter_opts(opts)
   State.with(function(state, attached)
-    if not state.terminal then
+    if state.terminal then
+      if not attached then
+        state.terminal:toggle()
+      end
+      if state.terminal:is_open() and opts.focus ~= false then
+        state.terminal:focus()
+      end
       return
     end
-    if not attached then
-      state.terminal:toggle()
-    end
-    if state.terminal:is_open() and opts.focus ~= false then
-      state.terminal:focus()
+    if state.session then
+      local open = state.session:is_open()
+      if open and not attached then
+        state.session:hide()
+      elseif not open then
+        state.session:show()
+      end
     end
   end, {
     attach = true,
@@ -142,10 +154,14 @@ end
 function M.hide(opts)
   opts = filter_opts(opts)
   State.with(function(state)
-    return state.terminal and state.terminal:hide()
+    if state.terminal then
+      return state.terminal:hide()
+    elseif state.session and state.session:is_open() then
+      return state.session:hide()
+    end
   end, {
     all = opts.all,
-    filter = Util.merge(opts.filter, { terminal = true }),
+    filter = opts.filter,
   })
 end
 
