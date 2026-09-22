@@ -19,14 +19,14 @@ function M.get(ctx, opts)
   opts.kind = opts.kind or "position"
   assert(ctx.buf or ctx.name, "Either buf or name must be provided")
 
-  local name = ctx.name or vim.api.nvim_buf_get_name(ctx.buf)
+  local name = vim.fs.normalize(ctx.name or vim.api.nvim_buf_get_name(ctx.buf))
   if not name or name == "" then
     name = "[No Name]"
   else
-    local cwd = ctx.cwd or vim.fn.getcwd(0)
+    local cwd = ctx.cwd or vim.fs.normalize(vim.fn.getcwd(0))
     local ok, rel = pcall(vim.fs.relpath, cwd, name)
     if ok and rel and rel ~= "" and rel ~= "." then
-      name = rel
+      name = rel:gsub("\\", "/")
     end
   end
 
