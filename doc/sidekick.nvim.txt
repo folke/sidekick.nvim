@@ -337,6 +337,7 @@ Default settings ~
         tools = {
           aider    = {},
           amazon_q = {},
+          amp      = {},
           claude   = {},
           codex    = {},
           copilot  = {},
@@ -636,6 +637,8 @@ which ones are installed.
 
   amazon_q              Amazon Q      Install guide
                         Developer     
+
+  amp                   Amp           See Amp docs
 
   claude                Claude Code   See Claude Code docs
                         CLI           
