@@ -245,7 +245,7 @@ local defaults = {
     enabled = function(buf)
       return vim.g.sidekick_nes ~= false and vim.b.sidekick_nes ~= false
     end,
-    debounce = 100,
+    debounce = 300,
     trigger = {
       -- events that trigger sidekick next edit suggestions
       events = { "ModeChanged i:n", "TextChanged", "User SidekickNesDone" },
@@ -300,6 +300,7 @@ local defaults = {
         hide_ctrl_z   = { "<c-z>", "blur"      , mode = "nt", desc = "go back to the previous window without hiding the terminal" },
         prompt        = { "<c-p>", "prompt"    , mode = "t" , desc = "insert prompt or context" },
         stopinsert    = { "<c-q>", "stopinsert", mode = "t" , desc = "enter normal mode" },
+        normal_cr     = { "<cr>" , "insert_cr" , mode = "n" , desc = "send <cr> to the terminal and enter normal mode" },
         -- Navigate windows in terminal mode. Only active when:
         -- * layout is not "float"
         -- * there is another window in the direction
@@ -328,6 +329,9 @@ local defaults = {
         vertical = true, -- vertical or horizontal split
         size = 0.5, -- size of the split (0-1 for percentage)
       },
+      -- max lines to capture when dumping a multiplexer pane for scrollback support
+      -- more lines means slower loading of the scrollback
+      dump = 2000,
     },
     --- Actual cli tool config is loaded from the runtime path `sk/cli/{tool}.lua` and merged with the config below.
     --- For default configs, see https://github.com/folke/sidekick.nvim/tree/main/sk/cli
@@ -477,7 +481,8 @@ require("sidekick.nes").toggle()
 
 
 ```lua
-require("sidekick.nes").update()
+---@param ev? vim.api.keyset.create_autocmd.callback_args
+require("sidekick.nes").update(ev)
 ```
 
 </td></tr>
