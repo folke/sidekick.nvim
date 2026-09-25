@@ -343,6 +343,7 @@ local defaults = {
       gemini   = {},
       grok     = {},
       opencode = {},
+      omp      = {},
       pi       = {},
       qwen     = {},
     },
