@@ -44,7 +44,7 @@ function M.on_status(err, res, ctx)
   status[ctx.client_id] = vim.deepcopy(res)
   local level = levels[res.kind or "Normal"] or vim.log.levels.INFO
 
-  if res.message and level >= Config.copilot.status.level then
+  if Config.nes.enabled ~= false and res.message and level >= Config.copilot.status.level then
     local msg = "**Copilot:** " .. res.message
     if msg:find("not signed") then
       if package.loaded.copilot then
