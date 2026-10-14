@@ -7,6 +7,31 @@ M.__index = M
 M.priority = 20
 M.external = true
 
+local function get_mux_session(pid)
+  local Util = require("sidekick.util")
+  local env = require("sidekick.cli.procs").env(pid)
+  if not env then
+    return nil
+  end
+
+  local tmux_pane = env["TMUX_PANE"]
+  if not tmux_pane then
+    return nil
+  end
+
+  local lines = Util.exec({
+    "tmux", "display-message", "-p", "-t", tmux_pane,
+    "#{session_name}:#{window_index}.#{pane_index}"
+  }, { notify = false })
+  
+  if lines and lines[1] then
+    -- Strip any trailing newlines or whitespace
+    return lines[1]:gsub("%s+$", "")
+  end
+
+  return nil
+end
+
 function M.sessions()
   local Procs = require("sidekick.cli.procs")
   local Util = require("sidekick.util")
@@ -44,7 +69,7 @@ function M.sessions()
         cwd = Procs.cwd(pid) or "",
         port = port,
         pids = Procs.pids(pid),
-        mux_session = tostring(pid),
+        mux_session = get_mux_session(pid) or tostring(pid),
         base_url = ("http://localhost:%d"):format(port),
       }
     end
