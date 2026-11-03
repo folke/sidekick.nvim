@@ -19,7 +19,8 @@ function M.get(ctx, opts)
   opts.kind = opts.kind or "position"
   assert(ctx.buf or ctx.name, "Either buf or name must be provided")
 
-  local name = ctx.name or vim.api.nvim_buf_get_name(ctx.buf)
+  local virtual = not ctx.name and ctx.buf and M.virtual(ctx.buf) or nil
+  local name = ctx.name or (virtual and virtual.name) or vim.api.nvim_buf_get_name(ctx.buf)
   if not name or name == "" then
     name = "[No Name]"
   else
@@ -51,6 +52,9 @@ function M.get(ctx, opts)
   ret[#ret + 1] = { name, "SidekickLocFile" }
 
   if not (ctx.row and ctx.col) and not ctx.range then
+    if virtual and virtual.side == "LEFT" then
+      ret[#ret + 1] = { " (base)", "Comment" }
+    end
     return { ret }
   end
 
@@ -81,6 +85,10 @@ function M.get(ctx, opts)
     end
   end
 
+  if virtual and virtual.side == "LEFT" then
+    ret[#ret + 1] = { " (base)", "Comment" }
+  end
+
   return { ret }
 end
 
@@ -89,6 +97,28 @@ function M.is_file(buf)
   return vim.bo[buf].buflisted
     and vim.tbl_contains({ "", "help" }, vim.bo[buf].buftype)
     and vim.fn.filereadable(vim.api.nvim_buf_get_name(buf)) == 1
+end
+
+---@class sidekick.context.Virtual
+---@field name string
+---@field side? "LEFT"|"RIGHT"
+
+--- Buffers that are not real files but map to one (e.g. octo review diffs,
+--- which are unlisted `octo://` buffers storing the repo-relative path)
+---@param buf integer
+---@return sidekick.context.Virtual?
+function M.virtual(buf)
+  local ok, props = pcall(function()
+    return vim.b[buf].octo_diff_props
+  end)
+  if ok and type(props) == "table" and props.path then
+    return { name = props.path, side = props.split }
+  end
+end
+
+---@param buf integer
+function M.is_ctx(buf)
+  return M.is_file(buf) or M.virtual(buf) ~= nil
 end
 
 return M
