@@ -503,7 +503,7 @@ diagnostics when requested.
 
 
 ```lua
----@param opts? sidekick.cli.Hide
+---@param opts? sidekick.cli.Close
 ---@overload fun(name: string)
 require("sidekick.cli").close(opts)
 ```
@@ -785,7 +785,7 @@ Here's a list of the available commands:
 - `show`: Show the CLI window.
 - `toggle`: Toggle the CLI window.
 - `hide`: Hide the CLI window.
-- `close`: Close the CLI window.
+- `close`: Close the CLI window. Pass `keep = true` to detach while keeping a tmux split open.
 - `focus`: Focus the CLI window.
 - `select`: Select a CLI tool to open.
 - `send`: Send a message to the current CLI tool.

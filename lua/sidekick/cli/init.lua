@@ -33,6 +33,9 @@ local M = {}
 ---@field filter? sidekick.cli.Filter
 ---@field all? boolean
 
+---@class sidekick.cli.Close: sidekick.cli.Hide
+---@field keep? boolean keep the tmux pane/window open and only detach from it
+
 ---@class sidekick.cli.Send: sidekick.cli.Show,sidekick.cli.Message
 ---@field submit? boolean
 
@@ -165,11 +168,13 @@ function M.hide(opts)
   })
 end
 
----@param opts? sidekick.cli.Hide
+---@param opts? sidekick.cli.Close
 ---@overload fun(name: string)
 function M.close(opts)
   opts = filter_opts(opts)
-  State.with(State.detach, {
+  State.with(function(state)
+    State.detach(state, { keep = opts.keep })
+  end, {
     all = opts.all,
     filter = Util.merge(opts.filter),
   })
