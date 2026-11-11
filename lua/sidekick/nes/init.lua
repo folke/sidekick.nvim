@@ -175,7 +175,7 @@ function M.update(ev)
     and ev.data.params.textDocument.version
 
   local version = vim.lsp.util.buf_versions[buf]
-  if evVersion and evVersion ~= version then
+  if buf ~= vim.api.nvim_get_current_buf() or (evVersion and evVersion ~= version) then
     return -- outdated request
   end
 
