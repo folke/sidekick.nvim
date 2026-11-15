@@ -26,6 +26,7 @@ M._attached = {} ---@type table<string,sidekick.cli.Session>
 ---@field tool sidekick.cli.Tool
 ---@field backend string
 ---@field dump? fun(self:sidekick.cli.Session):string?
+---@field focus? fun(self:sidekick.cli.Session)
 local B = {}
 B.__index = B
 B.priority = 0
