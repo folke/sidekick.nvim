@@ -26,6 +26,7 @@ function M.env(pid)
           env[k] = v
         end
       end
+      return env
     end
   end
 
@@ -34,16 +35,12 @@ function M.env(pid)
   end
 
   -- try ps as a fallback (macOS and others)
-  local lines = Util.exec({ "ps", "eww", "-p", tostring(pid) })
+  local lines = Util.exec({ "ps", "eww", "-o", "command=", "-p", tostring(pid) }, { notify = false })
   if lines and #lines > 0 then
-    -- ps eww output format: PID command ENV1=val1 ENV2=val2 ...
-    local line = lines[1]
-    -- Skip the PID and command, extract environment variables
-    for env_var in line:gmatch("(%w+=[^%s]+)") do
-      local k, v = env_var:match("^(.-)=(.*)$")
-      if k and v then
-        env[k] = v
-      end
+    -- ps eww output format: command ENV1=val1 ENV2=val2 ...
+    -- values containing spaces are truncated at the first space
+    for k, v in lines[1]:gmatch("([%w_]+)=(%S*)") do
+      env[k] = v
     end
   end
   return env
