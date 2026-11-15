@@ -89,11 +89,11 @@ local defaults = {
       -- terminal: new sessions will be created for each CLI tool and shown in a Neovim terminal
       -- window: when run inside a terminal multiplexer, new sessions will be created in a new tab
       -- split: when run inside a terminal multiplexer, new sessions will be created in a new split
-      -- NOTE: zellij only supports `terminal`
+      -- NOTE: zellij needs version 0.44 or newer for `window` and `split`
       create = "terminal", ---@type "terminal"|"window"|"split"
       split = {
         vertical = true, -- vertical or horizontal split
-        size = 0.5, -- size of the split (0-1 for percentage)
+        size = 0.5, -- size of the split (0-1 for percentage, ignored by zellij)
       },
       -- max lines to capture when dumping a multiplexer pane for scrollback support
       -- more lines means slower loading of the scrollback
