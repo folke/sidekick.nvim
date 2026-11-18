@@ -11,30 +11,23 @@ local M = {}
 ---@type table<string, sidekick.context.Fn>
 M.context = {
   position = function(ctx)
-    return Loc.is_file(ctx.buf) and Loc.get(ctx, { kind = "position" })
+    return Loc.is_ctx(ctx.buf) and Loc.get(ctx, { kind = "position" })
   end,
   file = function(ctx)
-    return Loc.is_file(ctx.buf) and Loc.get(ctx, { kind = "file" })
+    return Loc.is_ctx(ctx.buf) and Loc.get(ctx, { kind = "file" })
   end,
   line = function(ctx)
-    return Loc.is_file(ctx.buf) and Loc.get(ctx, { kind = "line" })
+    return Loc.is_ctx(ctx.buf) and Loc.get(ctx, { kind = "line" })
   end,
   this = function()
     -- this is not actually used.
     -- `{this}` is special, see the C:render function for more details
   end,
   buffers = function(ctx)
-    local ret = {} ---@type sidekick.Text[]
-    for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-      if Loc.is_file(buf) then
-        local file = Loc.get({ buf = buf, cwd = ctx.cwd }, { kind = "file" })[1]
-        if file then
-          table.insert(file, 1, { "- ", "@markup.list.markdown" })
-          ret[#ret + 1] = file
-        end
-      end
-    end
-    return ret
+    return M.file_list(vim.api.nvim_list_bufs(), ctx)
+  end,
+  visible = function(ctx)
+    return M.file_list(vim.tbl_map(vim.api.nvim_win_get_buf, vim.api.nvim_list_wins()), ctx)
   end,
   diagnostics = function(ctx)
     return Diag.get(ctx)
@@ -56,6 +49,28 @@ M.context = {
     return TextObject.get(ctx, { type = "class", kind = "position" })
   end,
 }
+
+---@param bufs integer[]
+---@param ctx sidekick.context.ctx
+---@return sidekick.Text[]
+function M.file_list(bufs, ctx)
+  local seen, ret = {}, {} ---@type table<string, boolean>, sidekick.Text[]
+  for _, buf in ipairs(bufs) do
+    if Loc.is_ctx(buf) then
+      local virtual = Loc.virtual(buf)
+      local name = virtual and virtual.name or vim.api.nvim_buf_get_name(buf)
+      if not seen[name] then
+        seen[name] = true
+        local file = Loc.get({ buf = buf, name = virtual and virtual.name, cwd = ctx.cwd }, { kind = "file" })[1]
+        if file then
+          table.insert(file, 1, { "- ", "@markup.list.markdown" })
+          ret[#ret + 1] = file
+        end
+      end
+    end
+  end
+  return ret
+end
 
 ---@class sidekick.context.ctx
 ---@field win integer
@@ -163,7 +178,7 @@ function C:render(opts)
     -- * when ctx is an actual file, then {position} is used
     -- * otherwise it's replaced with `this` and a `{selection}` is appended
     -- * when in that case the user is not in visual mode, the message will be discarded
-    local this, did_this, c = Loc.is_file(self.ctx.buf) and "{position}" or "this", false, 0
+    local this, did_this, c = Loc.is_ctx(self.ctx.buf) and "{position}" or "this", false, 0
     for l in ipairs(lines) do
       lines[l], c = lines[l]:gsub("{this}", this)
       if c > 0 and this == "this" and not did_this then
