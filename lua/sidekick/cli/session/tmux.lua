@@ -122,7 +122,7 @@ function M:close()
   end
 end
 
---- Kill the tmux pane when Neovim exits.
+--- Kill the tmux pane when Neovim exits while still attached.
 function M:close_on_exit()
   local pane_id = self.tmux_pane_id
   if not pane_id then
@@ -131,6 +131,9 @@ function M:close_on_exit()
   vim.api.nvim_create_autocmd("VimLeavePre", {
     once = true,
     callback = function()
+      if not self:is_attached() then
+        return
+      end
       pcall(Util.exec, { "tmux", "kill-pane", "-t", pane_id }, { notify = false })
     end,
   })
